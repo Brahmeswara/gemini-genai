@@ -1,0 +1,127 @@
+```java
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+class LmsPublishersApiTests {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    @Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void testGetPublishers() {
+        String url = "http://localhost:" + port + "/publishers";
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<Publisher[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, Publisher[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        List<Publisher> publishers = Arrays.asList(response.getBody());
+        assertEquals(2, publishers.size());
+
+        Publisher publisher1 = publishers.get(0);
+        assertEquals(1, publisher1.getId());
+        assertEquals("Acme Publishing", publisher1.getName());
+        assertEquals("123 Main Street", publisher1.getAddress());
+        assertEquals("(555) 555-5555", publisher1.getPhone());
+        assertEquals("info@acmepublishing.com", publisher1.getEmail());
+
+        Publisher publisher2 = publishers.get(1);
+        assertEquals(2, publisher2.getId());
+        assertEquals("Apex Publishing", publisher2.getName());
+        assertEquals("456 Elm Street", publisher2.getAddress());
+        assertEquals("(555) 555-5556", publisher2.getPhone());
+        assertEquals("info@apexpublishing.com", publisher2.getEmail());
+    }
+
+    @Test
+    void testCreatePublisher() {
+        String url = "http://localhost:" + port + "/publishers";
+
+        Publisher publisher = new Publisher();
+        publisher.setName("New Publisher");
+        publisher.setAddress("1000 Main Street");
+        publisher.setPhone("(555) 555-5557");
+        publisher.setEmail("info@newpublisher.com");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Publisher> entity = new HttpEntity<>(publisher, headers);
+
+        ResponseEntity<Publisher> response = restTemplate.exchange(url, HttpMethod.POST, entity, Publisher.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Publisher createdPublisher = response.getBody();
+        assertNotNull(createdPublisher);
+        assertEquals("New Publisher", createdPublisher.getName());
+        assertEquals("1000 Main Street", createdPublisher.getAddress());
+        assertEquals("(555) 555-5557", createdPublisher.getPhone());
+        assertEquals("info@newpublisher.com", createdPublisher.getEmail());
+    }
+
+    @Test
+    @Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void testGetPublisherByName() {
+        String url = "http://localhost:" + port + "/publishers/Acme Publishing";
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<Publisher> response = restTemplate.exchange(url, HttpMethod.GET, entity, Publisher.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Publisher publisher = response.getBody();
+        assertNotNull(publisher);
+        assertEquals(1, publisher.getId());
+        assertEquals("Acme Publishing", publisher.getName());
+        assertEquals("123 Main Street", publisher.getAddress());
+        assertEquals("(555) 555-5555", publisher.getPhone());
+        assertEquals("info@acmepublishing.com", publisher.getEmail());
+    }
+
+    @Test
+    @Sql(scripts = "classpath:data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void testUpdatePublisher() {
+        String url = "http://localhost:" + port + "/publishers/Acme Publishing";
+
+        Publisher publisher = new Publisher();
+        publisher.setId(1);
+        publisher.setName("Acme Publishing Inc.");
+        publisher.setAddress("123 Main Street, Suite 100");
+        publisher.setPhone("(555) 555-5555");
+        publisher.setEmail("info@acmepublishing.com");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Publisher> entity = new HttpEntity<>(publisher, headers);
+
+        ResponseEntity<Publisher> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Publisher.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Publisher updatedPublisher = response.getBody();
+        assertNotNull(updatedPublisher);
+        assertEquals(1, updatedPublisher.getId());
+        assertEquals("Acme Publishing Inc.", updatedPublisher.getName());
+        assertEquals("123 Main Street, Suite 100", updatedPublisher.getAddress());
+        assertEquals("(555) 555-5555", updatedPublisher.getPhone());
+        assertEquals("info@acmepublishing.com", updatedPublisher.getEmail());
+    }
+}
+```

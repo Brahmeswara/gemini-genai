@@ -1,0 +1,93 @@
+```java
+package com.example.lws.controllers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+class PublisherControllerTest {
+
+    @InjectMocks
+    private PublisherController publisherController;
+
+    @Mock
+    private PublisherService publisherService;
+
+    private Publisher publisher;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        publisher = Publisher.builder()
+                .id(1L)
+                .name("John Doe")
+                .address("123 Main Street")
+                .city("New York")
+                .state("NY")
+                .zip("12345")
+                .build();
+    }
+
+    @Test
+    void savePublisher() {
+        when(publisherService.savePublisher(publisher)).thenReturn(publisher);
+
+        Publisher savedPublisher = publisherController.savePublisher(publisher);
+
+        assertNotNull(savedPublisher);
+        assertEquals(publisher.getId(), savedPublisher.getId());
+        assertEquals(publisher.getName(), savedPublisher.getName());
+        assertEquals(publisher.getAddress(), savedPublisher.getAddress());
+        assertEquals(publisher.getCity(), savedPublisher.getCity());
+        assertEquals(publisher.getState(), savedPublisher.getState());
+        assertEquals(publisher.getZip(), savedPublisher.getZip());
+    }
+
+    @Test
+    void updatePublisher() {
+        when(publisherService.updatePublisher(publisher)).thenReturn(publisher);
+
+        Publisher updatedPublisher = publisherController.updatePublisher(publisher);
+
+        assertNotNull(updatedPublisher);
+        assertEquals(publisher.getId(), updatedPublisher.getId());
+        assertEquals(publisher.getName(), updatedPublisher.getName());
+        assertEquals(publisher.getAddress(), updatedPublisher.getAddress());
+        assertEquals(publisher.getCity(), updatedPublisher.getCity());
+        assertEquals(publisher.getState(), updatedPublisher.getState());
+        assertEquals(publisher.getZip(), updatedPublisher.getZip());
+    }
+
+    @Test
+    void deletePublisher() {
+        publisherController.deletePublisher(publisher.getId());
+
+        verify(publisherService, times(1)).deletePublisher(publisher.getId());
+    }
+
+    @Test
+    void getPublisherById() {
+        when(publisherService.getPublisherById(publisher.getId())).thenReturn(Optional.of(publisher));
+
+        Publisher publisherById = publisherController.getPublisherById(publisher.getId());
+
+        assertNotNull(publisherById);
+        assertEquals(publisher.getId(), publisherById.getId());
+        assertEquals(publisher.getName(), publisherById.getName());
+        assertEquals(publisher.getAddress(), publisherById.getAddress());
+        assertEquals(publisher.getCity(), publisherById.getCity());
+        assertEquals(publisher.getState(), publisherById.getState());
+        assertEquals(publisher.getZip(), publisherById.getZip());
+    }
+}
+```

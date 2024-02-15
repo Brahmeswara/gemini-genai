@@ -1,0 +1,30 @@
+
+output_to_dir: config/output-small
+overwrite_if_exists: False
+target-project-profile:
+  type : java-springboot
+  base-dir: C:/Users/91998/ai/gemini/lws
+  group-id : com.example
+  artifact-id: lws
+  save-config:
+    - type : ddl
+      prefix-path: src/main/resources
+    - type : dml
+      prefix-path: src/main/resources
+    - type: java
+      prefix-path: src/main/java
+
+config_files:
+  - config\LWS\small\01-generate-datahub-ddl.yaml
+  - config\LWS\small\02-gen-publisher-openapi-spec.yaml
+  - config\LWS\small\03-gen-books-openapi-spec.yaml
+  - config\LWS\small\04-gen-models-only.yaml
+  - config\LWS\small\05-gen-services-and-repos.yaml
+  - config\LWS\small\06-gen-rest-controllers.yaml
+  - config\LWS\small\07-gen-datahub-dml.yaml
+  - config\LWS\small\08-gen-publisher-api-tests.yaml
+  - config\LWS\small\09-gen-books-api-tests.yaml
+  - config\LWS\small\10-gen-book-search-functionality.yaml
+  - config\LWS\small\10-jquery-gen-book-search-functionality.yaml
+
+ 

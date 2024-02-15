@@ -1,0 +1,3 @@
+pip install google-generativeai
+pip install pyyaml
+pip install jsonschema

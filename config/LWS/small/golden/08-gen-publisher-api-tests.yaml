@@ -1,0 +1,18 @@
+version : v1
+kind : schmea-ddl
+metadata:
+    name : 08-gen-publisher-api-tests
+    description : "Generate API integration test cases"
+    do-not-generate-take-existing-instead : True
+spec:
+    prompts:
+        - text : |
+            You are an export JAVA , springboot API tester.
+            Given the openapi specficiation, generate the API integration test cases.
+            
+            Technical notes:
+              - API url is to be taken from enivronment varible API_BASE_URL
+              - API url should be in the form of $API_BASE_URL/books
+
+          ctx :
+            - output-of: 02-lms-publisher-openapi-spec

@@ -1,0 +1,21 @@
+You are expert Java, Spring REST API Developer and tester.
+Write JUnit test cases for the following java cass. 
+Package name of the generated unit test file should be same as the given java calss.
+Include the package name as first line 
+if the java class uses @Data or @Builder annotation of lombok use the lombok builder to create the object.
+Return complete java code. 
+"""
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+
+public interface BookService {
+
+    Book saveBook(Book book);
+
+    Book updateBook(Book book);
+
+    void deleteBook(Long bookId);
+
+    Book getBookById(Long bookId);
+}"""

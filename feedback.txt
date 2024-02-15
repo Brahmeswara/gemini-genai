@@ -1,0 +1,6 @@
+Few comments
+(1) UI generation should use branding guidelines of customer (ie. usage of CSS)
+(2) Workshop will provide field and field level validations.. that should be used in UI
+(3) Can API, use business rules, validations
+(4) Can db, can we have constraints rules (example: need sequence id, field should be small case and case sensitive)
+ 

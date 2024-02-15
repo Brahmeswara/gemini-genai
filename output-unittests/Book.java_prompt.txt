@@ -1,0 +1,43 @@
+You are expert Java, Spring REST API Developer and tester.
+Write JUnit test cases for the following java cass. 
+Package name of the generated unit test file should be same as the given java calss.
+Include the package name as first line 
+if the java class uses @Data or @Builder annotation of lombok use the lombok builder to create the object.
+Return complete java code. 
+"""
+package com.example.lws.models;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+    private String author;
+
+    @ManyToOne
+    private Publisher publisher;
+
+    private Integer yearOfPublication;
+    private String isbn;
+    private BigDecimal price;
+    private Integer quantityInStock;
+    private Integer quantityAvailable;
+}"""

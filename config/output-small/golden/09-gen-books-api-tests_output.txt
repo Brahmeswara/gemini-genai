@@ -1,0 +1,93 @@
+```java
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+
+class BookManagementSystemApiTest {
+
+    private static final String API_BASE_URL = System.getenv("API_BASE_URL");
+
+    @BeforeAll
+    static void setup() {
+        RestAssured.baseURI = API_BASE_URL;
+    }
+
+    @Test
+    void testGetAllBooks() {
+        given()
+                .when()
+                .get("/books")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("", hasSize(3));
+    }
+
+    @Test
+    void testCreateBook() {
+        String bookJson = "{\n" +
+                "  \"title\": \"The Hitchhiker's Guide to the Galaxy\",\n" +
+                "  \"author\": \"Douglas Adams\",\n" +
+                "  \"publisher\": 12345,\n" +
+                "  \"yearOfPublication\": 1979,\n" +
+                "  \"isbn\": \"0345391802\",\n" +
+                "  \"price\": 12.99,\n" +
+                "  \"quantityInStock\": 10,\n" +
+                "  \"quantityAvailable\": 10\n" +
+                "}";
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(bookJson)
+                .when()
+                .post("/books")
+                .then()
+                .statusCode(201)
+                .contentType(ContentType.JSON)
+                .body("title", equalTo("The Hitchhiker's Guide to the Galaxy"));
+    }
+
+    @Test
+    void testGetBookByTitle() {
+        given()
+                .pathParam("title", "The Lord of the Rings")
+                .when()
+                .get("/books/{title}")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("title", equalTo("The Lord of the Rings"));
+    }
+
+    @Test
+    void testUpdateBookByTitle() {
+        String bookJson = "{\n" +
+                "  \"title\": \"The Lord of the Rings\",\n" +
+                "  \"author\": \"J.R.R. Tolkien\",\n" +
+                "  \"publisher\": 12345,\n" +
+                "  \"yearOfPublication\": 1954,\n" +
+                "  \"isbn\": \"0395082560\",\n" +
+                "  \"price\": 14.99,\n" +
+                "  \"quantityInStock\": 15,\n" +
+                "  \"quantityAvailable\": 15\n" +
+                "}";
+
+        given()
+                .pathParam("title", "The Lord of the Rings")
+                .contentType(ContentType.JSON)
+                .body(bookJson)
+                .when()
+                .put("/books/{title}")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("price", equalTo(14.99));
+    }
+}
+```

@@ -1,0 +1,40 @@
+You are expert Java, Spring REST API Developer and tester.
+Write JUnit test cases for the following java cass. 
+Package name of the generated unit test file should be same as the given java calss.
+Include the package name as first line 
+if the java class uses @Data or @Builder annotation of lombok use the lombok builder to create the object.
+Return complete java code. 
+"""
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PublisherServiceImpl implements PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Override
+    public Publisher savePublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public Publisher updatePublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public void deletePublisher(Long publisherId) {
+        publisherRepository.deleteById(publisherId);
+    }
+
+    @Override
+    public Publisher getPublisherById(Long publisherId) {
+        return publisherRepository.findById(publisherId).orElseThrow(() -> new RuntimeException("Publisher not found"));
+    }
+}"""

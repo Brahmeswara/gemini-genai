@@ -1,0 +1,80 @@
+```java
+package com.example.lws.controllers;
+
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class BookControllerTest {
+
+    @Mock
+    private BookService bookService;
+
+    @InjectMocks
+    private BookController bookController;
+
+    private List<Book> books;
+    private Book book1, book2;
+
+    @BeforeEach
+    void setUp() {
+        books = new ArrayList<>();
+        book1 = Book.builder()
+                .id(1L)
+                .title("Title 1")
+                .author("Author 1")
+                .build();
+        book2 = Book.builder()
+                .id(2L)
+                .title("Title 2")
+                .author("Author 2")
+                .build();
+        books.add(book1);
+        books.add(book2);
+    }
+
+    @Test
+    void saveBook() {
+        when(bookService.saveBook(any(Book.class))).thenReturn(book1);
+        Book savedBook = bookController.saveBook(book1);
+        assertEquals(book1, savedBook);
+        verify(bookService).saveBook(book1);
+    }
+
+    @Test
+    void updateBook() {
+        when(bookService.updateBook(any(Book.class))).thenReturn(book2);
+        Book updatedBook = bookController.updateBook(book2);
+        assertEquals(book2, updatedBook);
+        verify(bookService).updateBook(book2);
+    }
+
+    @Test
+    void deleteBook() {
+        bookController.deleteBook(book1.getId());
+        verify(bookService).deleteBook(book1.getId());
+    }
+
+    @Test
+    void getBookById() {
+        when(bookService.getBookById(any(Long.class))).thenReturn(book1);
+        Book foundBook = bookController.getBookById(book1.getId());
+        assertEquals(book1, foundBook);
+        verify(bookService).getBookById(book1.getId());
+    }
+}
+```

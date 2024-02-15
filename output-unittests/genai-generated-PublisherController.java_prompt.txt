@@ -1,0 +1,67 @@
+You are expert Java, Spring REST API Developer and tester.
+Write JUnit test cases for the following java cass. 
+Package name of the generated unit test file should be same as the given java calss.
+Include the package name as first line 
+if the java class uses @Data or @Builder annotation of lombok use the lombok builder to create the object.
+Return complete java code. 
+"""
+package com.example.lws.controllers;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/publishers")
+public class PublisherController {
+
+    @Autowired
+    private PublisherService publisherService;
+
+    @PostMapping
+    public ResponseEntity<Publisher> savePublisher(@RequestBody Publisher publisher) {
+        try {
+            return new ResponseEntity<>(publisherService.savePublisher(publisher), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Publisher> updatePublisher(@RequestBody Publisher publisher) {
+        try {
+            return new ResponseEntity<>(publisherService.updatePublisher(publisher), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{publisherId}")
+    public ResponseEntity<Void> deletePublisher(@PathVariable Long publisherId) {
+        try {
+            publisherService.deletePublisher(publisherId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{publisherId}")
+    public ResponseEntity<Publisher> getPublisherById(@PathVariable Long publisherId) {
+        try {
+            return new ResponseEntity<>(publisherService.getPublisherById(publisherId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+}"""

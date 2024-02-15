@@ -1,0 +1,32 @@
+version : v1
+kind : openapi-to-springboot-microservices
+metadata:
+    name : 04-gen-models-only
+    description : "Generate java springboot microservices given the openapi spec"
+    do-not-generate-take-existing-instead : True
+    decorators:
+        type : java
+        begin-separator: "```java"
+        end-separator: "```"
+        move-type: BY-PACKAGE
+spec:
+    prompts:
+        - text : |
+            You are a good java , spring boot microservices developer. 
+            Generate jave model classes with persistence annotations based on the schema given. 
+            Book references publiher id as foreign key and this need added to the class with @ManyToOne annotation.
+            End goal is to develop java, spting boot 3 based micro services with error handling and retry mechanisms.
+
+            Follow the package naming as below.
+            group is com.example and artifact id is lws
+            entities should have package of com.example.lws.models
+            add getters and setters to all entities
+            all arguments and no argument constructors are generated for all entities
+            
+            repository java files should have package of com.example.lws.repository.
+            add all the required jpa annotations to the entities and repository classes.  
+            Use the jakarta.persistence package for all the jpa annotations. 
+            add all imports in the jave files for them to compile.
+            
+          ctx :
+            - output-of: 01-lms-datahub-ddl

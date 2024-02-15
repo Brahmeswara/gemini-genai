@@ -1,0 +1,98 @@
+```java
+package com.example.lws.services;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+public class PublisherServiceImplTest {
+
+    @Mock
+    private PublisherRepository publisherRepository;
+
+    @InjectMocks
+    private PublisherServiceImpl publisherService;
+
+    private Publisher publisher;
+
+    @BeforeEach
+    public void setUp() {
+        publisher = Publisher.builder()
+                .name("Test Publisher")
+                .address("123 Main Street")
+                .city("Anytown")
+                .state("CA")
+                .zip("12345")
+                .phone("555-123-4567")
+                .email("test@publisher.com")
+                .build();
+    }
+
+    @Test
+    public void testSavePublisher() {
+        when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
+
+        Publisher savedPublisher = publisherService.savePublisher(publisher);
+
+        assertNotNull(savedPublisher);
+        assertEquals(publisher.getName(), savedPublisher.getName());
+        assertEquals(publisher.getAddress(), savedPublisher.getAddress());
+        assertEquals(publisher.getCity(), savedPublisher.getCity());
+        assertEquals(publisher.getState(), savedPublisher.getState());
+        assertEquals(publisher.getZip(), savedPublisher.getZip());
+        assertEquals(publisher.getPhone(), savedPublisher.getPhone());
+        assertEquals(publisher.getEmail(), savedPublisher.getEmail());
+    }
+
+    @Test
+    public void testUpdatePublisher() {
+        when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
+
+        Publisher updatedPublisher = publisherService.updatePublisher(publisher);
+
+        assertNotNull(updatedPublisher);
+        assertEquals(publisher.getName(), updatedPublisher.getName());
+        assertEquals(publisher.getAddress(), updatedPublisher.getAddress());
+        assertEquals(publisher.getCity(), updatedPublisher.getCity());
+        assertEquals(publisher.getState(), updatedPublisher.getState());
+        assertEquals(publisher.getZip(), updatedPublisher.getZip());
+        assertEquals(publisher.getPhone(), updatedPublisher.getPhone());
+        assertEquals(publisher.getEmail(), updatedPublisher.getEmail());
+    }
+
+    @Test
+    public void testDeletePublisher() {
+        publisherRepository.deleteById(1L);
+
+        publisherService.deletePublisher(1L);
+    }
+
+    @Test
+    public void testGetPublisherById() {
+        when(publisherRepository.findById(1L)).thenReturn(Optional.of(publisher));
+
+        Publisher foundPublisher = publisherService.getPublisherById(1L);
+
+        assertNotNull(foundPublisher);
+        assertEquals(publisher.getName(), foundPublisher.getName());
+        assertEquals(publisher.getAddress(), foundPublisher.getAddress());
+        assertEquals(publisher.getCity(), foundPublisher.getCity());
+        assertEquals(publisher.getState(), foundPublisher.getState());
+        assertEquals(publisher.getZip(), foundPublisher.getZip());
+        assertEquals(publisher.getPhone(), foundPublisher.getPhone());
+        assertEquals(publisher.getEmail(), foundPublisher.getEmail());
+    }
+}
+```

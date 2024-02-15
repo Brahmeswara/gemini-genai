@@ -1,0 +1,215 @@
+
+You are expert Java, Spring boot 3 microservices developer. 
+You are given a jave repository interfaces, implementations and service classes.
+
+Generate java class implementation for rest controllers based on services classes provided.
+These classes will have package of com.example.lws.controllers .
+Add error handling and retry mechchanisms for these classes.
+
+End goal is to develop java, spting boot 3 based micro services with error handling and retry mechanisms.
+
+Follow the package naming as below.
+group is com.example and artifact id is lws
+Entity classes have package of com.example.lws.models .
+Repository interfaces have package of com.example.lws.repository .
+Service classes have package of com.example.lws.services .
+add all imports in the jave files for them to compile.
+**BookServiceImpl.java**
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class BookServiceImpl implements BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Override
+    public Book saveBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book updateBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public void deleteBook(Long bookId) {
+        bookRepository.deleteById(bookId);
+    }
+
+    @Override
+    public Book getBookById(Long bookId) {
+        return bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+    }
+}
+```
+
+**PublisherServiceImpl.java**
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PublisherServiceImpl implements PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Override
+    public Publisher savePublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public Publisher updatePublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public void deletePublisher(Long publisherId) {
+        publisherRepository.deleteById(publisherId);
+    }
+
+    @Override
+    public Publisher getPublisherById(Long publisherId) {
+        return publisherRepository.findById(publisherId).orElseThrow(() -> new RuntimeException("Publisher not found"));
+    }
+}
+```
+
+**BookService.java**
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+
+public interface BookService {
+
+    Book saveBook(Book book);
+
+    Book updateBook(Book book);
+
+    void deleteBook(Long bookId);
+
+    Book getBookById(Long bookId);
+}
+```
+
+**PublisherService.java**
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+
+public interface PublisherService {
+
+    Publisher savePublisher(Publisher publisher);
+
+    Publisher updatePublisher(Publisher publisher);
+
+    void deletePublisher(Long publisherId);
+
+    Publisher getPublisherById(Long publisherId);
+}
+```
+
+**BookController.java**
+```java
+package com.example.lws.controllers;
+
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;
+
+    @PostMapping
+    public Book saveBook(@RequestBody Book book) {
+        return bookService.saveBook(book);
+    }
+
+    @PutMapping
+    public Book updateBook(@RequestBody Book book) {
+        return bookService.updateBook(book);
+    }
+
+    @DeleteMapping("/{bookId}")
+    public void deleteBook(@PathVariable Long bookId) {
+        bookService.deleteBook(bookId);
+    }
+
+    @GetMapping("/{bookId}")
+    public Book getBookById(@PathVariable Long bookId) {
+        return bookService.getBookById(bookId);
+    }
+}
+```
+
+**PublisherController.java**
+```java
+package com.example.lws.controllers;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/publishers")
+public class PublisherController {
+
+    @Autowired
+    private PublisherService publisherService;
+
+    @PostMapping
+    public Publisher savePublisher(@RequestBody Publisher publisher) {
+        return publisherService.savePublisher(publisher);
+    }
+
+    @PutMapping
+    public Publisher updatePublisher(@RequestBody Publisher publisher) {
+        return publisherService.updatePublisher(publisher);
+    }
+
+    @DeleteMapping("/{publisherId}")
+    public void deletePublisher(@PathVariable Long publisherId) {
+        publisherService.deletePublisher(publisherId);
+    }
+
+    @GetMapping("/{publisherId}")
+    public Publisher getPublisherById(@PathVariable Long publisherId) {
+        return publisherService.getPublisherById(publisherId);
+    }
+}
+```

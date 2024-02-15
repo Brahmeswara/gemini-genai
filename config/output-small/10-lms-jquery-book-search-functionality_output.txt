@@ -1,0 +1,86 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Search</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="script.js"></script>
+</head>
+<body>
+  <h1>Book Search</h1>
+  <form>
+    <label for="author">Author:</label>
+    <input type="text" id="author">
+    <br>
+    <label for="publisher">Publisher:</label>
+    <input type="text" id="publisher">
+    <br>
+    <label for="category">Category:</label>
+    <select id="category">
+      <option value="Fiction">Fiction</option>
+      <option value="Non-Fiction">Non-Fiction</option>
+      <option value="Science Fiction">Science Fiction</option>
+      <option value="Fantasy">Fantasy</option>
+      <option value="Mystery">Mystery</option>
+      <option value="Romance">Romance</option>
+    </select>
+    <br>
+    <label for="keyword">Keyword:</label>
+    <input type="text" id="keyword">
+    <br>
+    <input type="submit" value="Search">
+  </form>
+  <div id="results"></div>
+</body>
+</html>
+```
+
+```javascript
+$(document).ready(function() {
+  $("form").submit(function(event) {
+    event.preventDefault();
+
+    var author = $("#author").val();
+    var publisher = $("#publisher").val();
+    var category = $("#category").val();
+    var keyword = $("#keyword").val();
+
+    var url = "localhost:8080/books";
+
+    if (author) {
+      url += "/author/" + author;
+    }
+
+    if (publisher) {
+      url += "/publisher/" + publisher;
+    }
+
+    if (category) {
+      url += "/category/" + category;
+    }
+
+    if (keyword) {
+      url += "/keyword/" + keyword;
+    }
+
+    $.ajax({
+      url: url,
+      method: "GET",
+      success: function(data) {
+        $("#results").empty();
+
+        if (data.length === 0) {
+          $("#results").append("<p>No results found.</p>");
+        } else {
+          $.each(data, function(index, book) {
+            $("#results").append("<p>" + book.title + " by " + book.author + "</p>");
+          });
+        }
+      },
+      error: function(error) {
+        $("#results").append("<p>An error occurred while searching for books.</p>");
+      }
+    });
+  });
+});
+```

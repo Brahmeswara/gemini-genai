@@ -1,0 +1,40 @@
+Given the business entities and its attributes, generate an openapi spec for 
+get list of all publishers
+creating a new publisher
+fetching a publisher by name 
+editing an existing publisher
+
+add validations and its error handling
+use openapi spec 3.0.1
+
+production url is https://lms.com/publishers
+qa url is https://qa.lms.com/publishers
+"""
+-- Drop the table if exists with cascade
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE PUBLISHERS
+(
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(20),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE BOOKS
+(
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT REFERENCES PUBLISHERS(ID),
+    YEAROFPUBLICATION INT,
+    ISBN VARCHAR(20) UNIQUE,
+    PRICE DECIMAL(10, 2),
+    QUANTITYINSTOCK INT DEFAULT 0,
+    QUANTITYAVAILABLE INT DEFAULT 0
+);
+"""

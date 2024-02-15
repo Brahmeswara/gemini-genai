@@ -1,0 +1,27 @@
+```java
+package com.example.lws.models;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+class PublisherTest {
+
+    @Test
+    void testBuilder() {
+        Publisher publisher = Publisher.builder()
+                .id(1L)
+                .name("John Doe")
+                .address("123 Main Street")
+                .phone("(555) 555-5555")
+                .email("john.doe@example.com")
+                .build();
+
+        assertEquals(1L, publisher.getId());
+        assertEquals("John Doe", publisher.getName());
+        assertEquals("123 Main Street", publisher.getAddress());
+        assertEquals("(555) 555-5555", publisher.getPhone());
+        assertEquals("john.doe@example.com", publisher.getEmail());
+    }
+}
+```

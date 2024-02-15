@@ -1,0 +1,29 @@
+version : v1
+kind : openapi-to-springboot-microservices
+metadata:
+    name : 05-gen-services-and-repos
+    description : "Generate java springboot microservices given the openapi spec"
+    do-not-generate-take-existing-instead : True
+spec:
+    prompts:
+        - text : |
+
+            You are expert Java, Spring boot 3 microservices developer. 
+            You are given a jave model entiry classes and repository inerfaces.
+
+            Generate java class implementation for repository and services.
+            End goal is to develop java, spting boot 3 based micro services with error handling and retry mechanisms.
+      
+            Follow the package naming as below.
+            group is com.example and artifact id is lws
+            Entity classes have package of com.example.lws.models .
+            Repository interfaces have package of com.example.lws.repository .
+          
+            add all the required jpa annotations to the entities and repository classes.  
+            Use the jakarta.persistence package for all the jpa annotations. 
+            add all imports in the jave files for them to compile.
+            Service java files should have package of com.example.lws.services.
+            Create both services interface and impl are in the same package of com.example.lws.services
+            
+          ctx :
+            - output-of: 04-gen-models-only

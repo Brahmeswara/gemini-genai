@@ -1,0 +1,12 @@
+Given the business objects and their attributes, please generate a relational database schema for h2 in-memory database.
+make sure to drop the table if exists with casade and create the table
+Please follow the below table and its attributes naming convenvetions 
+  1. Names in h2 in-memory must begin with a letter (a-z) .
+  2. The subsequent characters in a name can be letters, digits (0-9).
+  3. do not prefix the attribute names with the table name
+  4. use only letters (a-z) or digits (0-9) in the attribute names.
+"""
+- Business entity name PUBLISHERS with attributes ID, NAME, ADDRESS, PHONE, and EMAIL. 
+- Business entity name BOOKS with attributes ID, TITLE, AUTHOR, PUBLISHER, YEAROF-PUBLICATION, ISBN, PRICE, QUANTITYINSTOCK, and QUANTITYAVAILABLE. 
+- Published can have many Books published. 
+"""

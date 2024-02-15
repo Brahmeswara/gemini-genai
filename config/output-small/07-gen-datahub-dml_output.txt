@@ -1,0 +1,31 @@
+```sql
+-- Insert sample data into the PUBLISHERS table
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Apress', '2855 Telegraph Avenue, Suite 600, Berkeley, CA 94705', '510-549-5930', 'apress@apress.com');
+
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(2, 'Packt Publishing', '1900 Grant Street, Suite 1330, Denver, CO 80203', '303-862-1940', 'packt@packtpub.com');
+
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(3, 'Manning Publications', '20 Baldwin Road, Shelburne, VT 05482', '802-985-8670', 'manning@manning.com');
+
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(4, 'OReilly Media', '1005 Gravenstein Highway North, Sebastopol, CA 95472', '707-829-0515', 'oreilly@oreilly.com');
+
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(5, 'Pearson Education', '1 Lake Street, Upper Saddle River, NJ 07458', '201-291-2000', 'pearson@pearson.com');
+
+
+-- Insert sample data into the BOOKS table
+INSERT INTO BOOKS (ID, TITLE, AUTHOR, PUBLISHER, YEAROFPUBLICATION, ISBN, PRICE, QUANTITYINSTOCK, QUANTITYAVAILABLE) VALUES
+(1, 'Head First Java', 'Kathy Sierra, Bert Bates', 1, 2005, '0596009208', 49.99, 25, 20),
+(2, 'Thinking in Java', 'Bruce Eckel', 2, 2006, '0131872486', 79.99, 15, 10),
+(3, 'Java: The Complete Reference', 'Herbert Schildt', 3, 2017, '0071808503', 99.99, 10, 5),
+(4, 'Effective Java', 'Joshua Bloch', 4, 2018, '0134685997', 39.99, 20, 15),
+(5, 'Clean Code', 'Robert C. Martin', 5, 2009, '0132350882', 49.99, 30, 25),
+(6, 'The Pragmatic Programmer', 'Andrew Hunt, David Thomas', 1, 1999, '020161622X', 39.99, 18, 12),
+(7, 'Refactoring: Improving the Design of Existing Code', 'Martin Fowler', 2, 1999, '0976885869', 49.99, 12, 8),
+(8, 'Design Patterns: Elements of Reusable Object-Oriented Software', 'Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides', 4, 1995, '0201633612', 59.99, 10, 5),
+(9, 'Agile Principles, Patterns, and Practices', 'Robert C. Martin', 1, 2006, '013117462X', 39.99, 15, 10),
+(10, 'Domain-Driven Design: Tackling Complexity in the Heart of Software', 'Eric Evans', 3, 2004, '0321125215', 49.99, 12, 8);
+```

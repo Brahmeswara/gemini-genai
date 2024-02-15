@@ -1,0 +1,22 @@
+version : v1
+kind : schmea-to-dml
+metadata:
+    name : 07-gen-datahub-dml
+    description : "Generate publisher openaapi spec given the publisher schema"
+    do-not-generate-take-existing-instead : True
+    decorators:
+        type : dml
+        begin-separator: "```sql"
+        end-separator: "```"
+        save-to: data.ddl
+        move-type: DIRECT
+spec:
+    prompts:
+        - text : |
+            You are a good database developer. You have already created the schema for the datahub 
+            which is given in the context.
+            Generate dml scripts to insert sample data into the rdbms schema.
+            database used is h2 in-memory database.
+
+          ctx :
+            - output-of: 01-lms-datahub-ddl

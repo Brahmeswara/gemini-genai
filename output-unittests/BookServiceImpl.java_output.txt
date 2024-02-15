@@ -1,0 +1,102 @@
+```java
+package com.example.lws.services;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+public class BookServiceImplTest {
+
+    @Mock
+    private BookRepository bookRepository;
+
+    private BookService bookService;
+
+    @BeforeEach
+    public void setUp() {
+        bookService = new BookServiceImpl(bookRepository);
+    }
+
+    @Test
+    public void testSaveBook() {
+        // given
+        Book book = Book.builder().title("Mockito").author("Mockito Author").isbn("123456789").build();
+
+        // when
+        Book savedBook = bookService.saveBook(book);
+
+        // then
+        assertThat(savedBook).isNotNull();
+        assertThat(savedBook.getId()).isGreaterThan(0);
+        verify(bookRepository, times(1)).save(book);
+    }
+
+    @Test
+    public void testUpdateBook() {
+        // given
+        Long bookId = 1L;
+        Book book = Book.builder().id(bookId).title("Mockito").author("Mockito Author").isbn("123456789").build();
+
+        // when
+        Book updatedBook = bookService.updateBook(book);
+
+        // then
+        assertThat(updatedBook).isNotNull();
+        assertThat(updatedBook.getId()).isEqualTo(bookId);
+        verify(bookRepository, times(1)).save(book);
+    }
+
+    @Test
+    public void testDeleteBook() {
+        // given
+        Long bookId = 1L;
+
+        // when
+        bookService.deleteBook(bookId);
+
+        // then
+        verify(bookRepository, times(1)).deleteById(bookId);
+    }
+
+    @Test
+    public void testGetBookById() {
+        // given
+        Long bookId = 1L;
+        Book book = Book.builder().id(bookId).title("Mockito").author("Mockito Author").isbn("123456789").build();
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+
+        // when
+        Book foundBook = bookService.getBookById(bookId);
+
+        // then
+        assertThat(foundBook).isNotNull();
+        assertThat(foundBook.getId()).isEqualTo(bookId);
+        verify(bookRepository, times(1)).findById(bookId);
+    }
+
+    @Test
+    public void testGetBookById_throwsException() {
+        // given
+        Long bookId = 1L;
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+
+        // when
+        assertThrows(RuntimeException.class, () -> bookService.getBookById(bookId));
+
+        // then
+        verify(bookRepository, times(1)).findById(bookId);
+    }
+}
+```

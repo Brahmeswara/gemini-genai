@@ -1,0 +1,54 @@
+```java
+package com.example.lws.repository;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+class PublisherRepositoryTest {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Test
+    void should_find_no_publishers_if_repository_is_empty() {
+        Iterable<Publisher> publishers = publisherRepository.findAll();
+
+        assertThat(publishers).isEmpty();
+    }
+
+    @Test
+    void should_store_a_publisher() {
+        Publisher publisher = Publisher.builder()
+                .name("Harper Collins")
+                .address("195 Broadway, New York City, NY 10007")
+                .build();
+
+        publisherRepository.save(publisher);
+
+        Iterable<Publisher> publishers = publisherRepository.findAll();
+
+        assertThat(publishers).hasSize(1);
+        assertThat(publishers).contains(publisher);
+    }
+
+    @Test
+    void should_delete_all_publishers() {
+        Publisher publisher = Publisher.builder()
+                .name("Harper Collins")
+                .address("195 Broadway, New York City, NY 10007")
+                .build();
+
+        publisherRepository.save(publisher);
+
+        publisherRepository.deleteAll();
+
+        Iterable<Publisher> publishers = publisherRepository.findAll();
+
+        assertThat(publishers).isEmpty();
+    }
+}
+```

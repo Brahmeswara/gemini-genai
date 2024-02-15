@@ -1,0 +1,44 @@
+You are a good java , spring boot microservices developer. 
+Generate jave model classes with persistence annotations based on the schema given. 
+Book references publiher id as foreign key and this need added to the class with @ManyToOne annotation.
+End goal is to develop java, spting boot 3 based micro services with error handling and retry mechanisms.
+
+Follow the package naming as below.
+group is com.example and artifact id is lws
+entities should have package of com.example.lws.models
+add getters and setters to all entities
+all arguments and no argument constructors are generated for all entities
+
+repository java files should have package of com.example.lws.repository.
+add all the required jpa annotations to the entities and repository classes.  
+Use the jakarta.persistence package for all the jpa annotations. 
+add all imports in the jave files for them to compile.
+"""
+-- Drop the table if exists with cascade
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE PUBLISHERS
+(
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(20),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE BOOKS
+(
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT REFERENCES PUBLISHERS(ID),
+    YEAROFPUBLICATION INT,
+    ISBN VARCHAR(20) UNIQUE,
+    PRICE DECIMAL(10, 2),
+    QUANTITYINSTOCK INT DEFAULT 0,
+    QUANTITYAVAILABLE INT DEFAULT 0
+);
+"""
