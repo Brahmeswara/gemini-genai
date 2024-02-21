@@ -1,0 +1,339 @@
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "PUBLISHERS")
+public class Publisher {
+
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "NAME", nullable = false)
+    private String name;
+
+    @Column(name = "ADDRESS")
+    private String address;
+
+    @Column(name = "PHONE")
+    private String phone;
+
+    @Column(name = "EMAIL")
+    private String email;
+
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "BOOKS")
+public class Book {
+
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "TITLE", nullable = false)
+    private String title;
+
+    @Column(name = "AUTHOR")
+    private String author;
+
+    @Column(name = "PUBLISHER")
+    private Integer publisher;
+
+    @Column(name = "YEAROFPUBLICATION")
+    private Integer yearOfPublication;
+
+    @Column(name = "ISBN")
+    private String isbn;
+
+    @Column(name = "PRICE")
+    private Double price;
+
+    @Column(name = "QUANTITYINSTOCK")
+    private Integer quantityInStock;
+
+    @Column(name = "QUANTITYAVAILABLE")
+    private Integer quantityAvailable;
+
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "VENDORS")
+public class Vendor {
+
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "NAME", nullable = false)
+    private String name;
+
+    @Column(name = "ADDRESS")
+    private String address;
+
+    @Column(name = "PHONE")
+    private String phone;
+
+    @Column(name = "EMAIL")
+    private String email;
+
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "CUSTOMERS")
+public class Customer {
+
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "NAME", nullable = false)
+    private String name;
+
+    @Column(name = "ADDRESS")
+    private String address;
+
+    @Column(name = "PHONE")
+    private String phone;
+
+    @Column(name = "EMAIL")
+    private String email;
+
+    @Column(name = "SUBSCRIPTIONAMOUNT")
+    private Double subscriptionAmount;
+
+    @Column(name = "SUBSCRIPTIONSTARTDATE")
+    private String subscriptionStartDate;
+
+    @Column(name = "SUBSCRIPTIONENDDATE")
+    private String subscriptionEndDate;
+
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "RENTALTRANSACTIONS")
+public class RentalTransaction {
+
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "CUSTOMERID")
+    private Integer customerId;
+
+    @Column(name = "BOOKID")
+    private Integer bookId;
+
+    @Column(name = "RENTALDATE")
+    private String rentalDate;
+
+    @Column(name = "RETURNDATE")
+    private String returnDate;
+
+    @Column(name = "FINEAMOUNT")
+    private Double fineAmount;
+
+}
+```
+
+```java
+package com.example.lws.web;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/publishers")
+public class PublisherController {
+
+    @Autowired
+    private PublisherService publisherService;
+
+    @GetMapping
+    public ResponseEntity<List<Publisher>> getAllPublishers() {
+        List<Publisher> publishers = publisherService.getAllPublishers();
+        return new ResponseEntity<>(publishers, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Publisher> createPublisher(@RequestBody Publisher publisher) {
+        Publisher createdPublisher = publisherService.createPublisher(publisher);
+        return new ResponseEntity<>(createdPublisher, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<Publisher> getPublisherByName(@PathVariable String name) {
+        Publisher publisher = publisherService.getPublisherByName(name);
+        return new ResponseEntity<>(publisher, HttpStatus.OK);
+    }
+
+    @PutMapping("/{name}")
+    public ResponseEntity<Publisher> editPublisher(@PathVariable String name, @RequestBody Publisher publisher) {
+        Publisher editedPublisher = publisherService.editPublisher(name, publisher);
+        return new ResponseEntity<>(editedPublisher, HttpStatus.OK);
+    }
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+
+    Publisher findByName(String name);
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+
+import java.util.List;
+
+public interface PublisherService {
+
+    List<Publisher> getAllPublishers();
+
+    Publisher createPublisher(Publisher publisher);
+
+    Publisher getPublisherByName(String name);
+
+    Publisher editPublisher(String name, Publisher publisher);
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PublisherServiceImpl implements PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Override
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
+    @Override
+    public Publisher createPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public Publisher getPublisherByName(String name) {
+        return publisherRepository.findByName(name);
+    }
+
+    @Override
+    public Publisher editPublisher(String name, Publisher publisher) {
+        Publisher existingPublisher = publisherRepository.findByName(name);
+        existingPublisher.setName(publisher.getName());
+        existingPublisher.setAddress(publisher.getAddress());
+        existingPublisher.setPhone(publisher.getPhone());
+        existingPublisher.setEmail(publisher.getEmail());
+        return publisherRepository.save(existingPublisher);
+    }
+
+}
+```
+
+```java
+package com.example.lws;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LwsApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(LwsApplication.class, args);
+    }
+
+}
+```

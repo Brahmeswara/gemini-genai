@@ -1,0 +1,86 @@
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.UserInput;
+import com.example.lws.repositories.UserInputRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+public class UserInputServiceTest {
+
+    @Mock
+    private UserInputRepository userInputRepository;
+
+    @InjectMocks
+    private UserInputService userInputService;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testSaveUserInput() {
+        UserInput userInput = UserInput.builder().input("test").build();
+
+        when(userInputRepository.save(any())).thenReturn(userInput);
+
+        UserInput savedUserInput = userInputService.saveUserInput(userInput);
+
+        assertEquals(userInput.getInput(), savedUserInput.getInput());
+        verify(userInputRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testUpdateUserInput() {
+        UserInput userInput = UserInput.builder().id(1L).input("test").build();
+
+        when(userInputRepository.save(any())).thenReturn(userInput);
+
+        UserInput savedUserInput = userInputService.updateUserInput(userInput);
+
+        assertEquals(userInput.getId(), savedUserInput.getId());
+        assertEquals(userInput.getInput(), savedUserInput.getInput());
+        verify(userInputRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testDeleteUserInput() {
+        userInputService.deleteUserInput(1L);
+
+        verify(userInputRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void testGetUserInputById() {
+        UserInput userInput = UserInput.builder().id(1L).input("test").build();
+
+        when(userInputRepository.findById(1L)).thenReturn(Optional.of(userInput));
+
+        UserInput foundUserInput = userInputService.getUserInputById(1L);
+
+        assertEquals(userInput.getId(), foundUserInput.getId());
+        assertEquals(userInput.getInput(), foundUserInput.getInput());
+        verify(userInputRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void testGetUserInputById_whenUserInputNotFound() {
+        when(userInputRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userInputService.getUserInputById(1L));
+        verify(userInputRepository, times(1)).findById(1L);
+    }
+}
+```

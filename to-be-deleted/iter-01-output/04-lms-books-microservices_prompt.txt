@@ -1,0 +1,245 @@
+
+You are expert Java, Spring boot 3 microservices developer. 
+You are given a schema and and an openapi specification .
+
+Generate java 17, springboot 3.1.7 based micro services with error handling and 
+retry mechanisms based on the given schema and openapi specification.
+
+Relational schema is given in the context below. 
+The tables and entity mapping is as below.
+1. Books table maps to Book entity
+2. Publishers table maps to Publisher entity.
+3. Book entity has a reference to Publisher entity via Book.publisher_id
+   that is books to publishers is one to one relationship. Publisher can have many books.
+4. Create Java Entity with relations between tables
+5. Create the entities and repository for the above relations.
+
+Java project group is com.example and artifact id is lws.
+Entities should have package of com.example.lws.models.
+Add getters and setters to all entities.
+All arguments and no argument constructors are generated for all entities.
+Model the entiries by taking the primary and foreign keys into consideration.
+As example, Books entity refers to Publisher entity vi its attribute publisher.id
+Restcontrollers should have package of com.example.lws.web .
+Repository java files should have package of com.example.lws.repository.
+Service java files should have package of com.example.lws.services.
+Create both services interface and impl are in the same package of com.example.lws.services
+Main spring boot application should have package of com.example.lws .
+Add all imports in the jave files.
+Use the jakarta.persistence package for all the jpa annotations
+"""h2
+-- Table: PUBLISHERS
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+CREATE TABLE PUBLISHERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Table: BOOKS
+DROP TABLE IF EXISTS BOOKS CASCADE;
+CREATE TABLE BOOKS (
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT NOT NULL,
+    YEAROFPUBLICATION YEAR,
+    ISBN VARCHAR(255),
+    PRICE DECIMAL(10, 2),
+    QUANTITYINSTOCK INT DEFAULT 0,
+    QUANTITYAVAILABLE INT DEFAULT 0,
+    FOREIGN KEY (PUBLISHER) REFERENCES PUBLISHERS(ID)
+);
+
+-- Table: VENDORS
+DROP TABLE IF EXISTS VENDORS CASCADE;
+CREATE TABLE VENDORS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Table: CUSTOMERS
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+CREATE TABLE CUSTOMERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255),
+    SUBSCRIPTIONAMOUNT DECIMAL(10, 2),
+    SUBSCRIPTIONSTARTDATE DATE,
+    SUBSCRIPTIONENDDATE DATE
+);
+
+-- Table: RENTALTRANSACTIONS
+DROP TABLE IF EXISTS RENTALTRANSACTIONS CASCADE;
+CREATE TABLE RENTALTRANSACTIONS (
+    ID INT PRIMARY KEY,
+    CUSTOMERID INT NOT NULL,
+    BOOKID INT NOT NULL,
+    RENTALDATE DATE,
+    RETURNDATE DATE,
+    FINEAMOUNT DECIMAL(10, 2),
+    FOREIGN KEY (CUSTOMERID) REFERENCES CUSTOMERS(ID),
+    FOREIGN KEY (BOOKID) REFERENCES BOOKS(ID)
+);
+"""
+"""
+openapi: 3.0.1
+info:
+  title: Book API
+  version: 1.0.0
+  description: API for managing books in a library
+servers:
+  - url: https://qa.lms.com/books
+    description: QA Server
+  - url: https://lms.com/books
+    description: Production Server
+paths:
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Get list of all books
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+      operationId: getAllBooks
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: createBook
+  /books/{title}:
+    get:
+      tags:
+        - Books
+      summary: Get a book by title
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: getBookByTitle
+    put:
+      tags:
+        - Books
+      summary: Edit an existing book
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: editBook
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        author:
+          type: string
+          maxLength: 255
+        publisher:
+          type: integer
+          format: int64
+        yearOfPublication:
+          type: integer
+          format: int32
+        isbn:
+          type: string
+          maxLength: 255
+        price:
+          type: number
+          format: double
+        quantityInStock:
+          type: integer
+          format: int32
+        quantityAvailable:
+          type: integer
+          format: int32
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+"""

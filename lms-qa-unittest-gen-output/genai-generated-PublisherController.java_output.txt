@@ -1,0 +1,135 @@
+package com.example.lws.controllers;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class PublisherControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private PublisherService publisherService;
+
+    private Publisher publisher;
+
+    @BeforeEach
+    void setUp() {
+        publisher = new Publisher(1L, "Publisher 1");
+    }
+
+    @Test
+    @DisplayName("POST /publishers - Created")
+    void testSavePublisher_Created() throws Exception {
+        when(publisherService.savePublisher(any(Publisher.class))).thenReturn(publisher);
+
+        mockMvc.perform(post("/publishers")
+                        .contentType("application/json")
+                        .content("{\"id\": null, \"publisherName\": \"Publisher 1\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(content().json("{\"id\": 1, \"publisherName\": \"Publisher 1\"}"));
+    }
+
+    @Test
+    @DisplayName("POST /publishers - Internal Server Error")
+    void testSavePublisher_InternalServerError() throws Exception {
+        when(publisherService.savePublisher(any(Publisher.class))).thenThrow(new RuntimeException());
+
+        mockMvc.perform(post("/publishers")
+                        .contentType("application/json")
+                        .content("{\"id\": null, \"publisherName\": \"Publisher 1\"}"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @DisplayName("PUT /publishers - OK")
+    void testUpdatePublisher_OK() throws Exception {
+        when(publisherService.updatePublisher(any(Publisher.class))).thenReturn(publisher);
+
+        mockMvc.perform(put("/publishers")
+                        .contentType("application/json")
+                        .content("{\"id\": 1, \"publisherName\": \"Publisher 1\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\": 1, \"publisherName\": \"Publisher 1\"}"));
+    }
+
+    @Test
+    @DisplayName("PUT /publishers - Internal Server Error")
+    void testUpdatePublisher_InternalServerError() throws Exception {
+        when(publisherService.updatePublisher(any(Publisher.class))).thenThrow(new RuntimeException());
+
+        mockMvc.perform(put("/publishers")
+                        .contentType("application/json")
+                        .content("{\"id\": 1, \"publisherName\": \"Publisher 1\"}"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @DisplayName("DELETE /publishers/{publisherId} - No Content")
+    void testDeletePublisher_NoContent() throws Exception {
+        doNothing().when(publisherService).deletePublisher(any(Long.class));
+
+        mockMvc.perform(delete("/publishers/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /publishers/{publisherId} - Internal Server Error")
+    void testDeletePublisher_InternalServerError() throws Exception {
+        doThrow(new RuntimeException()).when(publisherService).deletePublisher(any(Long.class));
+
+        mockMvc.perform(delete("/publishers/1"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @DisplayName("GET /publishers/{publisherId} - OK")
+    void testGetPublisherById_OK() throws Exception {
+        when(publisherService.getPublisherById(any(Long.class))).thenReturn(Optional.of(publisher));
+
+        mockMvc.perform(get("/publishers/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\": 1, \"publisherName\": \"Publisher 1\"}"));
+    }
+
+    @Test
+    @DisplayName("GET /publishers/{publisherId} - Not Found")
+    void testGetPublisherById_NotFound() throws Exception {
+        when(publisherService.getPublisherById(any(Long.class))).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/publishers/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /publishers/{publisherId} - Internal Server Error")
+    void testGetPublisherById_InternalServerError() throws Exception {
+        when(publisherService.getPublisherById(any(Long.class))).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/publishers/1"))
+                .andExpect(status().isInternalServerError());
+    }
+}

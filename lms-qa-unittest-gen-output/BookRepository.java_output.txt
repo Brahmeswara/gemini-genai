@@ -1,0 +1,48 @@
+```java
+package com.example.lws.repository;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+class BookRepositoryTest {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Test
+    void should_find_no_books_if_repository_is_empty() {
+        assertThat(bookRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void should_store_a_book() {
+        Book book = Book.builder()
+                .title("The Hitchhiker's Guide to the Galaxy")
+                .author("Douglas Adams")
+                .build();
+
+        bookRepository.save(book);
+
+        assertThat(bookRepository.findAll()).hasSize(1);
+        assertThat(bookRepository.findAll()).contains(book);
+    }
+
+    @Test
+    void should_delete_all_books() {
+        Book book = Book.builder()
+                .title("The Hitchhiker's Guide to the Galaxy")
+                .author("Douglas Adams")
+                .build();
+
+        bookRepository.save(book);
+
+        bookRepository.deleteAll();
+
+        assertThat(bookRepository.findAll()).isEmpty();
+    }
+}
+```

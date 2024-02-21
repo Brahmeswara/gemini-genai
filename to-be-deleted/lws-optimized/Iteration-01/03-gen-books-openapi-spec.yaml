@@ -1,0 +1,20 @@
+version : v1
+kind : schmea-to-openapi-spec
+metadata:
+    name : 03-lms-books-openapi-spec
+    description : "Generate publisher openaapi spec given the books schema"
+spec:
+    prompts:
+        - text : |
+            Given the business entities and its attributes, generate an openapi spec for 
+            get list of all books
+            creating a new book
+            fetching an existing book by name
+            editing an existing book
+
+            add validations and its error handling
+
+            production url is https://lms.com/books
+            qa url is https://qa.lms.com/books
+          ctx :
+            - output-of: 01-lms-datahub-ddl

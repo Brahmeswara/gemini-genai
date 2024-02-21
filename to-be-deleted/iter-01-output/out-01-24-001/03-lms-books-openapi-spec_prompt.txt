@@ -1,0 +1,123 @@
+Given the business entities and its attributes, generate an openapi spec for 
+get list of all books
+creating a new book
+fetching an existing book by title.
+Note: book name and title are used interchangably
+editing an existing book
+
+add validations and its error handling
+use openapi spec 3.0.1
+
+production url is https://lms.com/books
+qa url is https://qa.lms.com/books
+"""
+-- Drop the tables if they already exist
+DROP TABLE if exists customers CASCADE;
+DROP TABLE if exists publishers CASCADE;
+DROP TABLE if exists vendors CASCADE;
+DROP TABLE if exists books CASCADE;
+DROP TABLE if exists rental_transactions CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE PUBLISHERS (
+  ID INT PRIMARY KEY,
+  NAME VARCHAR(255) NOT NULL,
+  ADDRESS VARCHAR(255),
+  PHONE VARCHAR(255),
+  EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE BOOKS (
+  ID INT PRIMARY KEY,
+  TITLE VARCHAR(255) NOT NULL,
+  AUTHOR VARCHAR(255),
+  PUBLISHER INT REFERENCES PUBLISHERS(ID),
+  "YEAR-OF-PUBLICATION" INT,
+  ISBN VARCHAR(255) UNIQUE,
+  PRICE DECIMAL(10, 2),
+  "QUANTITY-IN-STOCK" INT DEFAULT 0,
+  "QUANTITY-AVAILABLE" INT DEFAULT 0
+);
+
+-- Create the VENDORS table
+CREATE TABLE VENDORS (
+  ID INT PRIMARY KEY,
+  NAME VARCHAR(255) NOT NULL,
+  ADDRESS VARCHAR(255),
+  PHONE VARCHAR(255),
+  EMAIL VARCHAR(255)
+);
+
+-- Create the CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+  ID INT PRIMARY KEY,
+  NAME VARCHAR(255) NOT NULL,
+  ADDRESS VARCHAR(255),
+  PHONE VARCHAR(255),
+  EMAIL VARCHAR(255),
+  "SUBSCRIPTION-AMOUNT" DECIMAL(10, 2),
+  "SUBSCRIPTION-START-DATE" DATE,
+  "SUBSCRIPTION-END-DATE" DATE
+);
+
+-- Create the RENTAL-TRANSACTIONS table
+CREATE TABLE RENTAL_TRANSACTIONS (
+  ID INT PRIMARY KEY,
+  "CUSTOMER-ID" INT REFERENCES CUSTOMERS(ID),
+  "BOOK-ID" INT REFERENCES BOOKS(ID),
+  "RENTAL-DATE" DATE,
+  "RETURN-DATE" DATE,
+  "FINE-AMOUNT" DECIMAL(10, 2)
+);
+
+-- Insert data into the PUBLISHERS table
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'HarperCollins', '10 East 53rd Street, New York, NY 10022', '212-207-7000', 'info@harpercollins.com'),
+(2, 'Penguin Random House', '1745 Broadway, New York, NY 10019', '212-782-9000', 'info@penguinrandomhouse.com'),
+(3, 'Simon & Schuster', '1230 Avenue of the Americas, New York, NY 10020', '212-698-7000', 'info@simonandschuster.com'),
+(4, 'Hachette Book Group', '237 Park Avenue, New York, NY 10017', '212-641-2800', 'info@hachettebookgroup.com'),
+(5, 'Macmillan Publishers', '120 Broadway, New York, NY 10271', '212-532-7700', 'info@macmillan.com');
+
+-- Insert data into the BOOKS table
+INSERT INTO BOOKS (ID, TITLE, AUTHOR, PUBLISHER, "YEAR-OF-PUBLICATION", ISBN, PRICE, "QUANTITY-IN-STOCK", "QUANTITY-AVAILABLE") VALUES
+(1, 'The Iliad', 'Homer', 1, -800, '9780140444445', 12.99, 20, 15),
+(2, 'The Odyssey', 'Homer', 1, -700, '9780140444456', 14.99, 15, 10),
+(3, 'The Aeneid', 'Virgil', 2, -29, '9780140444447', 16.99, 10, 5),
+(4, 'The Divine Comedy', 'Dante Alighieri', 3, 1320, '9780140444448', 19.99, 5, 0),
+(5, 'Hamlet', 'William Shakespeare', 4, 1603, '9780140444449', 10.99, 25, 20),
+(6, 'Othello', 'William Shakespeare', 4, 1604, '9780140444450', 12.99, 18, 13),
+(7, 'King Lear', 'William Shakespeare', 4, 1606, '9780140444451', 14.99, 12, 8),
+(8, 'Macbeth', 'William Shakespeare', 4, 1606, '9780140444452', 10.99, 15, 10),
+(9, 'Romeo and Juliet', 'William Shakespeare', 4, 1597, '9780140444453', 9.99, 20, 15),
+(10, 'Pride and Prejudice', 'Jane Austen', 5, 1813, '9780679405429', 12.99, 18, 13);
+
+-- Insert data into the VENDORS table
+INSERT INTO VENDORS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Baker & Taylor', '501 South 5th Street, Minneapolis, MN 55401', '800-223-2665', 'info@baker-taylor.com'),
+(2, 'Ingram Content Group', '1 Ingram Boulevard, La Vergne, TN 37086', '800-937-8000', 'info@ingramcontent.com'),
+(3, 'Bookazine', '4406 Distribution Drive, Reno, NV 89502', '800-462-6420', 'info@bookazine.com'),
+(4, 'Amazon.com', '410 Terry Avenue North, Seattle, WA 98109', '800-280-4331', 'info@amazon.com'),
+(5, 'Barnes & Noble', '75 Rockefeller Plaza, New York, NY 10019', '800-843-2665', 'info@barnesandnoble.com');
+
+-- Insert data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (ID, NAME, ADDRESS, PHONE, EMAIL, "SUBSCRIPTION-AMOUNT", "SUBSCRIPTION-START-DATE", "SUBSCRIPTION-END-DATE") VALUES
+(1, 'John Smith', '123 Main Street, Anytown, CA 12345', '555-123-4567', 'john.smith@example.com', 10.00, '2023-01-01', '2023-12-31'),
+(2, 'Jane Doe', '456 Elm Street, Anytown, CA 12345', '555-234-5678', 'jane.doe@example.com', 15.00, '2023-02-01', '2024-01-31'),
+(3, 'Michael Jones', '789 Oak Street, Anytown, CA 12345', '555-345-6789', 'michael.jones@example.com', 20.00, '2023-03-01', '2024-02-29'),
+(4, 'Mary Johnson', '1011 Pine Street, Anytown, CA 12345', '555-456-7890', 'mary.johnson@example.com', 25.00, '2023-04-01', '2024-03-31'),
+(5, 'Robert Brown', '1213 Cedar Street, Anytown, CA 12345', '555-567-8901', 'robert.brown@example.com', 30.00, '2023-05-01', '2024-04-30');
+
+-- Insert data into the RENTAL-TRANSACTIONS table
+INSERT INTO RENTAL_TRANSACTIONS ("CUSTOMER-ID", "BOOK-ID", "RENTAL-DATE", "RETURN-DATE", "FINE-AMOUNT") VALUES
+(1, 1, '2023-01-01', '2023-01-15', 0.00),
+(2, 2, '2023-02-01', '2023-02-15', 0.00),
+(3, 3, '2023-03-01', '2023-03-15', 0.00),
+(4, 4, '2023-04-01', '2023-04-15', 0.00),
+(5, 5, '2023-05-01', '2023-05-15', 0.00),
+(1, 6, '2023-01-16', '2023-01-31', 1.00),
+(2, 7, '2023-02-16', '2023-02-28', 2.00),
+(3, 8, '2023-03-16', '2023-03-31', 3.00),
+(4, 9, '2023-04-16', '2023-04-30', 4.00),
+(5, 10, '2023-05-16', '2023-05-31', 5.00);
+"""

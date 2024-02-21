@@ -1,0 +1,277 @@
+
+You are expert Java, Spring boot 3 microservices developer. 
+You are given a schema and and an openapi specification .
+
+Generate java 17, springboot 3.1.7 based micro services with error handling and 
+retry mechanisms based on the given schema and openapi specification.
+
+Relational schema is given in the context below. The relations are as below
+1. Boooks can have one Publisher and Publisher can have many books. 
+2. Books table referenes publisher via publisher_id.
+3. Create Java Entity with relations between tables
+   Books has references to Publisher via Books.publisher_id
+4. Create the entities and repository for the above relations.
+
+Java project group is com.example and artifact id is lws.
+Entities should have package of com.example.lws.models.
+Add getters and setters to all entities.
+All arguments and no argument constructors are generated for all entities.
+Model the entiries by taking the primary and foreign keys into consideration.
+As example, Books entity refers to Publisher entity vi its attribute publisher.id
+Restcontrollers should have package of com.example.lws.web .
+Repository java files should have package of com.example.lws.repository.
+Service java files should have package of com.example.lws.services.
+Create both services interface and impl are in the same package of com.example.lws.services
+Main spring boot application should have package of com.example.lws .
+Add all imports in the jave files.
+Use the jakarta.persistence package for all the jpa annotations
+
+"""
+```yaml
+openapi: 3.0.1
+info:
+  title: Library API
+  version: 1.0.0
+  description: This API provides CRUD operations for books in a library.
+servers:
+  - url: https://lms.com/books
+    description: Production server
+  - url: https://qa.lms.com/books
+    description: QA server
+paths:
+  /books:
+    get:
+      summary: List all books
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Create a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBook'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+  /books/{title}:
+    get:
+      summary: Get a book by title
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+    put:
+      summary: Update a book by title
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the book
+        title:
+          type: string
+          description: The title of the book
+        author:
+          type: string
+          description: The author of the book
+        publisher:
+          type: integer
+          description: The publisher of the book
+        yearOfPublication:
+          type: integer
+          description: The year the book was published
+        isbn:
+          type: string
+          description: The ISBN of the book
+        price:
+          type: number
+          description: The price of the book
+        quantityInStock:
+          type: integer
+          description: The quantity of the book in stock
+        quantityAvailable:
+          type: integer
+          description: The quantity of the book available for rent
+    NewBook:
+      type: object
+      required:
+        - title
+        - author
+        - publisher
+        - yearOfPublication
+        - isbn
+        - price
+        - quantityInStock
+        - quantityAvailable
+      properties:
+        title:
+          type: string
+          description: The title of the book
+        author:
+          type: string
+          description: The author of the book
+        publisher:
+          type: integer
+          description: The publisher of the book
+        yearOfPublication:
+          type: integer
+          description: The year the book was published
+        isbn:
+          type: string
+          description: The ISBN of the book
+        price:
+          type: number
+          description: The price of the book
+        quantityInStock:
+          type: integer
+          description: The quantity of the book in stock
+        quantityAvailable:
+          type: integer
+          description: The quantity of the book available for rent
+```
+"""
+
+"""
+```sql
+-- Drop the tables if they exist, in cascade mode
+DROP TABLE IF EXISTS RENTAL_TRANSACTIONS CASCADE;
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+DROP TABLE IF EXISTS VENDORS CASCADE;
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE IF NOT EXISTS PUBLISHERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE IF NOT EXISTS BOOKS (
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT REFERENCES PUBLISHERS(ID),
+    "YEAR-OF-PUBLICATION" INT,
+    ISBN VARCHAR(255) UNIQUE,
+    PRICE DECIMAL(10, 2),
+    "QUANTITY-IN-STOCK" INT DEFAULT 0,
+    "QUANTITY-AVAILABLE" INT DEFAULT 0
+);
+
+-- Create the VENDORS table
+CREATE TABLE IF NOT EXISTS VENDORS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the CUSTOMERS table
+CREATE TABLE IF NOT EXISTS CUSTOMERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255),
+    "SUBSCRIPTION-AMOUNT" DECIMAL(10, 2),
+    "SUBSCRIPTION-START-DATE" DATE,
+    "SUBSCRIPTION-END-DATE" DATE
+);
+
+-- Create the RENTAL_TRANSACTIONS table
+CREATE TABLE IF NOT EXISTS RENTAL_TRANSACTIONS (
+    ID INT PRIMARY KEY,
+    "CUSTOMER-ID" INT REFERENCES CUSTOMERS(ID),
+    "BOOK-ID" INT REFERENCES BOOKS(ID),
+    "RENTAL-DATE" DATE,
+    "RETURN-DATE" DATE,
+    "FINE-AMOUNT" DECIMAL(10, 2)
+);
+
+-- Insert some sample data into the PUBLISHERS table
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Packt Publishing', '123 Main Street, New York, NY 10001', '212-555-1212', 'packt@packtpub.com'),
+(2, 'O'Reilly Media', '1005 Gravenstein Highway North, Sebastopol, CA 95472', '707-829-0515', 'oreilly@oreilly.com'),
+(3, 'Pearson Education', 'One Lake Street, Upper Saddle River, NJ 07458', '201-236-3200', 'pearson@pearson.com');
+
+-- Insert some sample data into the BOOKS table
+INSERT INTO BOOKS (ID, TITLE, AUTHOR, PUBLISHER, "YEAR-OF-PUBLICATION", ISBN, PRICE, "QUANTITY-IN-STOCK", "QUANTITY-AVAILABLE") VALUES
+(1, 'The Pragmatic Programmer', 'Andrew Hunt and David Thomas', 1, 2000, '978-0201616220', 39.99, 10, 5),
+(2, 'Clean Code', 'Robert C. Martin', 2, 2008, '978-0132350884', 49.99, 15, 10),
+(3, 'The Phoenix Project', 'Gene Kim, Kevin Behr, and George Spafford', 3, 2013, '978-0988262585', 29.99, 20, 15),
+(4, 'The DevOps Handbook', 'Gene Kim, Jez Humble, Patrick Debois, and John Willis', 3, 2016, '978-0988637404', 49.99, 25, 20),
+(5, 'Accelerate', 'Nicole Forsgren, Jez Humble, and Gene Kim', 3, 2018, '978-1942788330', 39.99, 30, 25);
+
+-- Insert some sample data into the VENDORS table
+INSERT INTO VENDORS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Amazon.com', '410 Terry Avenue North, Seattle, WA 98109', '206-266-1000', 'amazon@amazon.com'),
+(2, 'Barnes & Noble', '122 Fifth Avenue, New York, NY 10011', '212-674-8800', 'barnesandnoble@barnesandnoble.com'),
+(3, 'Books-A-Million', '301 Patton Avenue, Birmingham, AL 35211', '205-942-8200', 'booksamillion@booksamillion.com');
+
+-- Insert some sample data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (ID, NAME, ADDRESS, PHONE, EMAIL, "SUBSCRIPTION-AMOUNT", "SUBSCRIPTION-START-DATE", "SUBSCRIPTION-END-DATE") VALUES
+(1, 'John Smith', '123 Main Street, Anytown, CA 12345', '555-1212', 'john.smith@example.com', 10.00, '2023-01-01', '2024-12-31'),
+(2, 'Jane Doe', '456 Elm Street, Anytown, CA 12345', '555-2323', 'jane.doe@example.com', 15.00, '2022-07-01', '2023-06-30'),
+(3, 'Michael Jones', '789 Oak Street, Anytown, CA 12345', '555-3434', 'michael.jones@example.com', 20.00, '2021-04-01', '2022-03-31');
+
+-- Insert some sample data into the RENTAL_TRANSACTIONS table
+INSERT INTO RENTAL_TRANSACTIONS (ID, "CUSTOMER-ID", "BOOK
+"""

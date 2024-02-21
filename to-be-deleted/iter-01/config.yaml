@@ -1,0 +1,17 @@
+output_to_dir: iter-01-output
+overwrite_if_exists: true
+output-profile:
+  language: java
+  db-type : rdbms
+  db-name : h2 in-memory
+  spring-boot: True
+  java-package: com.example.demo
+  java-class-name: DemoApplication
+config_files:
+  - LWS\iter-01\01-generate-datahub-ddl.yaml
+  - LWS\iter-01\02-gen-publisher-openapi-spec.yaml
+  - LWS\iter-01\03-gen-books-openapi-spec.yaml
+  - LWS\iter-01\04-gen-publisher-code.yaml
+  - LWS\iter-01\05-gen-book-code.yaml
+  #- LWS\iter-01\06-gen-book-search-functionality.yaml
+  - LWS\iter-01\07-gen-datahub-dml.yaml  

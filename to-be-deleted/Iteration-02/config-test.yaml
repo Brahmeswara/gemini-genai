@@ -1,0 +1,12 @@
+output_to_dir: out
+overwrite_if_exists: true
+output-profile:
+  language: java
+  db-type : rdbms
+  db-name : h2 in-memory
+  spring-boot: True
+  java-package: com.example.demo
+  java-class-name: DemoApplication
+config_files:
+  - LWS\Iteration-01\generate-schema-ddl.yaml
+  - LWS\Iteration-01\generate-schema-dml.yaml

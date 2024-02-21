@@ -1,0 +1,47 @@
+"""
+At the command line, only need to run once to install the package via pip:
+
+$ pip install google-generativeai
+"""
+
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_API_KEY")
+
+# Set up the model
+generation_config = {
+  "temperature": 0.9,
+  "top_p": 1,
+  "top_k": 1,
+  "max_output_tokens": 2048,
+}
+
+safety_settings = [
+  {
+    "category": "HARM_CATEGORY_HARASSMENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_HATE_SPEECH",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+]
+
+model = genai.GenerativeModel(model_name="gemini-pro",
+                              generation_config=generation_config,
+                              safety_settings=safety_settings)
+
+prompt_parts = [
+  "Given the related publisher and books schema, generate a book search code based on angular ui .\nadditionally openapi spec also is given as refefence to genrate the ui code.\n\nOne should be able to search by By author, By publications, By category, By keyword \n1. Search by author: \n\tProvide a search field where users can enter the name of the author. \n\tRetrieve all books in your system that match the entered author name. \n\tDisplay the search results to the user. \n2. Search by publication: \n\tProvide a search field where users can enter the publication details, such as the publisher or publication year. \n\tRetrieve all books in your system that match the entered publication details. \n\tDisplay the search results to the user. \n3. Search by category: \n    Provide a list of categories or genres that users can select from. \n\tAllow users to choose a specific category or multiple categories. \n\tRetrieve all books in your system that belong to the selected categories. \n\tDisplay the search results to the user. \n4. Search by keyword: \n\tProvide a search field where users can enter a keyword related to the book they are looking for.\n\tRetrieve all books in your system that have the keyword in their title, author, description, or any other relevant fields.\n\tDisplay the search results to the user.\n\"\"\"\n\"\"\"\n-- Create a table named Publishers\nCREATE TABLE PUBLISHERS (\n  PUBLISHERS_ID INT PRIMARY KEY AUTO_INCREMENT,\n  PUBLISHERS_NAME VARCHAR(255) NOT NULL,\n  PUBLISHERS_ADDRESS VARCHAR(255),\n  PUBLISHERS_PHONE VARCHAR(255),\n  PUBLISHERS_EMAIL VARCHAR(255)\n);\n\n-- Create a table named Books\nCREATE TABLE BOOKS (\n  BOOKS_ID INT PRIMARY KEY AUTO_INCREMENT,\n  BOOKS_TITLE VARCHAR(255) NOT NULL,\n  BOOKS_AUTHOR VARCHAR(255),\n  BOOKS_PUBLISHER INT,\n  BOOKS_YEAR_OF_PUBLICATION YEAR,\n  BOOKS_ISBN VARCHAR(255) UNIQUE,\n  BOOKS_PRICE DECIMAL(8,2),\n  BOOKS_QUANTITY_IN_STOCK INT DEFAULT 0,\n  BOOKS_QUANTITY_AVAILABLE INT DEFAULT 0,\n  CONSTRAINT FK_PUBLISHER FOREIGN KEY (BOOKS_PUBLISHER) REFERENCES PUBLISHERS(PUBLISHERS_ID)\n);\n\n\"\"\"\n\"\"\"\nopenapi: 3.0.0\ninfo:\n title: Library Management System\n description: This API provides CRUD operations for managing books in a library.\n version: 1.0.0\nservers:\n - url: https://lms.com/books\n  description: Production server\n - url: https://qa.lms.com/books\n  description: QA server\ntags:\n - name: Books\npaths:\n /books:\n  post:\n   summary: Create a new book\n   description: Creates a new book in the library.\n   tags: [Books]\n   requestBody:\n    required: true\n    content:\n     application/json:\n      schema:\n       $ref: '#/components/schemas/Book'\n   responses:\n    '201':\n     description: Book created successfully\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Book'\n    '400':\n     description: Bad request. The request body is invalid.\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Error'\n    '500':\n     description: Internal server error. Something went wrong on the server.\n     content:\n      text/plain:\n       schema:\n        type: string\n  get:\n   summary: Get all books\n   description: Returns a list of all books in the library.\n   tags: [Books]\n   responses:\n    '200':\n     description: List of all books\n     content:\n      application/json:\n       schema:\n        type: array\n        items:\n         $ref: '#/components/schemas/Book'\n    '500':\n     description: Internal server error. Something went wrong on the server.\n     content:\n      text/plain:\n       schema:\n        type: string\n /books/{bookName}:\n  get:\n   summary: Get book by name\n   description: Returns a book by its name.\n   tags: [Books]\n   parameters:\n    - name: bookName\n     in: path\n     required: true\n     schema:\n      type: string\n   responses:\n    '200':\n     description: Book found\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Book'\n    '404':\n     description: Book not found\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Error'\n    '500':\n     description: Internal server error. Something went wrong on the server.\n     content:\n      text/plain:\n       schema:\n        type: string\n  put:\n   summary: Update book by name\n   description: Updates a book by its name.\n   tags: [Books]\n   parameters:\n    - name: bookName\n     in: path\n     required: true\n     schema:\n      type: string\n   requestBody:\n    required: true\n    content:\n     application/json:\n      schema:\n       $ref: '#/components/schemas/Book'\n   responses:\n    '200':\n     description: Book updated successfully\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Book'\n    '400':\n     description: Bad request. The request body is invalid.\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Error'\n    '404':\n     description: Book not found\n     content:\n      application/json:\n       schema:\n        $ref: '#/components/schemas/Error'\n    '500':\n     description: Internal server error. Something went wrong on the server.\n     content:\n      text/plain:\n       schema:\n        type: string\ncomponents:\n schemas:\n  Book:\n   type: object\n   required:\n    - title\n    - author\n   properties:\n    id:\n     type: integer\n     format: int64\n     readOnly: true\n    title:\n     type: string\n     maxLength: 255\n    author:\n     type: string\n     maxLength: 255\n    publisher:\n     type: integer\n     format: int64\n    yearOfPublication:\n     type: integer\n     format: int32\n    isbn:\n     type: string\n     maxLength: 255\n    price:\n     type: number\n     format: double\n    quantityInStock:\n     type: integer\n     format: int32\n    quantityAvailable:\n     type: integer\n     format: int32\n  Error:\n   type: object\n   required:\n    - message\n   properties:\n    message:\n     type: string\n\n\"\"\"\nopenapi: 3.0.0\ninfo:\n title: Bookstore API\n description: This API allows you to manage publishers, books, and customers.\n version: 1.0.0\nservers:\n - url: http://localhost:8080\npaths:\n /publishers:\n post:\n  summary: Create a new publisher\n  requestBody:\n  required: true\n  content:\n   application/json:\n   schema:\n    required:\n    - name\n    properties:\n    name:\n     type: string\n    address:\n     type: string\n    phone:\n     type: string\n    email:\n     type: string\n  responses:\n  '201':\n   description: Publisher created successfully\n   content:\n   application/json:\n    schema:\n    $ref: '#/components/schemas/Publisher'\n  '400':\n   description: Bad request\n get:\n  summary: Fetch all publishers\n  responses:\n  '200':\n   description: Publishers fetched successfully\n   content:\n   application/json:\n    schema:\n    type: array\n    items:\n     $ref: '#/components/schemas/Publisher'\n /publishers/{name}:\n get:\n  summary: Fetch a publisher by name\n  parameters:\n  - name: name\n   in: path\n   required: true\n   schema:\n   type: string\n  responses:\n  '200':\n   description: Publisher fetched successfully\n   content:\n   application/json:\n    schema:\n    $ref: '#/components/schemas/Publisher'\n  '404':\n   description: Publisher not found\n put:\n  summary: Edit an existing publisher\n  parameters:\n  - name: name\n   in: path\n   required: true\n   schema:\n   type: string\n  requestBody:\n  required: true\n  content:\n   application/json:\n   schema:\n    required:\n    - name\n    properties:\n    name:\n     type: string\n    address:\n     type: string\n    phone:\n     type: string\n    email:\n     type: string\n  responses:\n  '200':\n   description: Publisher edited successfully\n   content:\n   application/json:\n    schema:\n    $ref: '#/components/schemas/Publisher'\n  '400':\n   description: Bad request\n  '404':\n   description: Publisher not found\ncomponents:\n schemas:\n Publisher:\n  type: object\n  properties:\n  id:\n   type: integer\n   readOnly: true\n  name:\n   type: string\n  address:\n   type: string\n  phone:\n   type: string\n  email:\n   type: string\n \n\"\"\"",
+]
+
+response = model.generate_content(prompt_parts)
+print(response.text)

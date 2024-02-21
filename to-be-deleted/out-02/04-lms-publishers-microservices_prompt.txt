@@ -1,0 +1,114 @@
+Generate java 17, springboot 3.1.7 based micro services with error handling and 
+retry mechanisms based on the given schema and openapi specification.
+group is com.example and artifact id is lws
+entities should have package of com.example.lws.models
+add getters and setters to all entities
+all arguments and no argument constructors are generated for all entities
+restcontrollers should have package of com.example.lws.web
+repository java files should have package of com.example.lws.repository
+service java files should have package of com.example.lws.services
+make sure that both services interface and impl are in the same package of com.example.lws.services
+main spring boot application should have package of com.example.lws
+make sure to add all imports in the jave files
+Use the jakarta.persistence package for all the jpa annotations
+```sql
+-- Drop tables if they exist
+DROP TABLE IF EXISTS RENTAL_TRANSACTIONS CASCADE;
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+DROP TABLE IF EXISTS VENDORS CASCADE;
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE PUBLISHERS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255) NOT NULL,
+    PHONE VARCHAR(20) NOT NULL,
+    EMAIL VARCHAR(255) UNIQUE,
+    PRIMARY KEY (ID)
+);
+
+-- Create the BOOKS table
+CREATE TABLE BOOKS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255) NOT NULL,
+    PUBLISHER INT NOT NULL,
+    YEAR_OF_PUBLICATION INT NOT NULL,
+    ISBN VARCHAR(13) UNIQUE,
+    PRICE DECIMAL(10, 2) NOT NULL,
+    QUANTITY_IN_STOCK INT NOT NULL DEFAULT 0,
+    QUANTITY_AVAILABLE INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (ID),
+    FOREIGN KEY (PUBLISHER) REFERENCES PUBLISHERS(ID)
+);
+
+-- Create the VENDORS table
+CREATE TABLE VENDORS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255) NOT NULL,
+    PHONE VARCHAR(20) NOT NULL,
+    EMAIL VARCHAR(255) UNIQUE,
+    PRIMARY KEY (ID)
+);
+
+-- Create the CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255) NOT NULL,
+    PHONE VARCHAR(20) NOT NULL,
+    EMAIL VARCHAR(255) UNIQUE,
+    SUBSCRIPTION_AMOUNT DECIMAL(10, 2) NOT NULL,
+    SUBSCRIPTION_START_DATE DATE NOT NULL,
+    SUBSCRIPTION_END_DATE DATE NOT NULL,
+    PRIMARY KEY (ID)
+);
+
+-- Create the RENTAL_TRANSACTIONS table
+CREATE TABLE RENTAL_TRANSACTIONS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    CUSTOMER_ID INT NOT NULL,
+    BOOK_ID INT NOT NULL,
+    RENTAL_DATE DATE NOT NULL,
+    RETURN_DATE DATE,
+    FINE_AMOUNT DECIMAL(10, 2),
+    PRIMARY KEY (ID),
+    FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS(ID),
+    FOREIGN KEY (BOOK_ID) REFERENCES BOOKS(ID)
+);
+
+-- Insert some data into the PUBLISHERS table
+INSERT INTO PUBLISHERS (NAME, ADDRESS, PHONE, EMAIL) VALUES
+('HarperCollins', '10 East 53rd Street, New York, NY 10022', '(212) 207-7000', 'harpercollins@example.com'),
+('Simon & Schuster', '1230 Avenue of the Americas, New York, NY 10020', '(212) 698-7000', 'simonandschuster@example.com'),
+('Hachette Book Group', '31 East 32nd Street, New York, NY 10016', '(212) 726-4000', 'hachettebookgroup@example.com'),
+('Macmillan Publishers', '120 Broadway, New York, NY 10271', '(212) 720-2000', 'macmillanpublishers@example.com'),
+('Penguin Random House', '1745 Broadway, New York, NY 10019', '(212) 782-9000', 'penguinrandomhouse@example.com');
+
+-- Insert some data into the BOOKS table
+INSERT INTO BOOKS (TITLE, AUTHOR, PUBLISHER, YEAR_OF_PUBLICATION, ISBN, PRICE, QUANTITY_IN_STOCK, QUANTITY_AVAILABLE) VALUES
+('The Iliad', 'Homer', 1, -800, '9780140444445', 12.99, 20, 15),
+('The Odyssey', 'Homer', 1, -700, '9780140444456', 14.99, 15, 10),
+('The Aeneid', 'Virgil', 2, -29, '9780307271713', 10.99, 10, 5),
+('The Canterbury Tales', 'Geoffrey Chaucer', 3, 1387, '9780384003024', 16.99, 12, 8),
+('Hamlet', 'William Shakespeare', 4, 1603, '9780486267337', 7.99, 25, 20),
+('The Great Gatsby', 'F. Scott Fitzgerald', 5, 1925, '9780743273565', 10.99, 20, 15),
+('1984', 'George Orwell', 2, 1949, '9780451524935', 9.99, 30, 25),
+('To Kill a Mockingbird', 'Harper Lee', 3, 1960, '9780062420701', 15.99, 25, 20),
+('Pride and Prejudice', 'Jane Austen', 4, 1813, '9780679405429', 12.99, 18, 12),
+('Ulysses', 'James Joyce', 5, 1922, '9780380973766', 19.99, 10, 5);
+
+-- Insert some data into the VENDORS table
+INSERT INTO VENDORS (NAME, ADDRESS, PHONE, EMAIL) VALUES
+('Baker & Taylor', '501 South 4th Street, Minneapolis, MN 55415', '(800) 288-2225', 'bakerandtaylor@example.com'),
+('Ingram Content Group', '1226 Heil Quaker Boulevard, La Vergne, TN 37086', '(800) 453-4811', 'ingramcontentgroup@example.com'),
+('Midwest Tape', '7401 Metro Boulevard, Minneapolis, MN 55439', '(800) 826-0531', 'midwesttape@example.com'),
+('Bookazine', '2345 South 500 West, Salt Lake City, UT 84119', '(801) 975-0588', 'bookazine@example.com'),
+('Barnes & Noble', '122 5th Avenue, New York, NY 10011', '(212) 675-6000', 'barnesandnoble@example.com');
+
+-- Insert some data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (NAME, ADDRESS, PHONE, EMAIL, SUBSCRIPTION_AMOUNT, SUBSCRIPTION_START_DATE, SUBSCRIPTION_END_DATE) VALUES
+('John Smith', '123 Main Street, Anytown, CA 12345', '(555) 123-4567', 'john.smith@example.com', 10.00, '2023-01-01', '2024-12-31

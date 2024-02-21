@@ -1,0 +1,89 @@
+```sql
+-- Drop the tables if they exist, in cascade mode
+DROP TABLE IF EXISTS RENTAL_TRANSACTIONS CASCADE;
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+DROP TABLE IF EXISTS VENDORS CASCADE;
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE IF NOT EXISTS PUBLISHERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE IF NOT EXISTS BOOKS (
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT REFERENCES PUBLISHERS(ID),
+    "YEAR-OF-PUBLICATION" INT,
+    ISBN VARCHAR(255) UNIQUE,
+    PRICE DECIMAL(10, 2),
+    "QUANTITY-IN-STOCK" INT DEFAULT 0,
+    "QUANTITY-AVAILABLE" INT DEFAULT 0
+);
+
+-- Create the VENDORS table
+CREATE TABLE IF NOT EXISTS VENDORS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the CUSTOMERS table
+CREATE TABLE IF NOT EXISTS CUSTOMERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255),
+    "SUBSCRIPTION-AMOUNT" DECIMAL(10, 2),
+    "SUBSCRIPTION-START-DATE" DATE,
+    "SUBSCRIPTION-END-DATE" DATE
+);
+
+-- Create the RENTAL_TRANSACTIONS table
+CREATE TABLE IF NOT EXISTS RENTAL_TRANSACTIONS (
+    ID INT PRIMARY KEY,
+    "CUSTOMER-ID" INT REFERENCES CUSTOMERS(ID),
+    "BOOK-ID" INT REFERENCES BOOKS(ID),
+    "RENTAL-DATE" DATE,
+    "RETURN-DATE" DATE,
+    "FINE-AMOUNT" DECIMAL(10, 2)
+);
+
+-- Insert some sample data into the PUBLISHERS table
+INSERT INTO PUBLISHERS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Packt Publishing', '123 Main Street, New York, NY 10001', '212-555-1212', 'packt@packtpub.com'),
+(2, 'O'Reilly Media', '1005 Gravenstein Highway North, Sebastopol, CA 95472', '707-829-0515', 'oreilly@oreilly.com'),
+(3, 'Pearson Education', 'One Lake Street, Upper Saddle River, NJ 07458', '201-236-3200', 'pearson@pearson.com');
+
+-- Insert some sample data into the BOOKS table
+INSERT INTO BOOKS (ID, TITLE, AUTHOR, PUBLISHER, "YEAR-OF-PUBLICATION", ISBN, PRICE, "QUANTITY-IN-STOCK", "QUANTITY-AVAILABLE") VALUES
+(1, 'The Pragmatic Programmer', 'Andrew Hunt and David Thomas', 1, 2000, '978-0201616220', 39.99, 10, 5),
+(2, 'Clean Code', 'Robert C. Martin', 2, 2008, '978-0132350884', 49.99, 15, 10),
+(3, 'The Phoenix Project', 'Gene Kim, Kevin Behr, and George Spafford', 3, 2013, '978-0988262585', 29.99, 20, 15),
+(4, 'The DevOps Handbook', 'Gene Kim, Jez Humble, Patrick Debois, and John Willis', 3, 2016, '978-0988637404', 49.99, 25, 20),
+(5, 'Accelerate', 'Nicole Forsgren, Jez Humble, and Gene Kim', 3, 2018, '978-1942788330', 39.99, 30, 25);
+
+-- Insert some sample data into the VENDORS table
+INSERT INTO VENDORS (ID, NAME, ADDRESS, PHONE, EMAIL) VALUES
+(1, 'Amazon.com', '410 Terry Avenue North, Seattle, WA 98109', '206-266-1000', 'amazon@amazon.com'),
+(2, 'Barnes & Noble', '122 Fifth Avenue, New York, NY 10011', '212-674-8800', 'barnesandnoble@barnesandnoble.com'),
+(3, 'Books-A-Million', '301 Patton Avenue, Birmingham, AL 35211', '205-942-8200', 'booksamillion@booksamillion.com');
+
+-- Insert some sample data into the CUSTOMERS table
+INSERT INTO CUSTOMERS (ID, NAME, ADDRESS, PHONE, EMAIL, "SUBSCRIPTION-AMOUNT", "SUBSCRIPTION-START-DATE", "SUBSCRIPTION-END-DATE") VALUES
+(1, 'John Smith', '123 Main Street, Anytown, CA 12345', '555-1212', 'john.smith@example.com', 10.00, '2023-01-01', '2024-12-31'),
+(2, 'Jane Doe', '456 Elm Street, Anytown, CA 12345', '555-2323', 'jane.doe@example.com', 15.00, '2022-07-01', '2023-06-30'),
+(3, 'Michael Jones', '789 Oak Street, Anytown, CA 12345', '555-3434', 'michael.jones@example.com', 20.00, '2021-04-01', '2022-03-31');
+
+-- Insert some sample data into the RENTAL_TRANSACTIONS table
+INSERT INTO RENTAL_TRANSACTIONS (ID, "CUSTOMER-ID", "BOOK

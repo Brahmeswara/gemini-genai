@@ -1,0 +1,258 @@
+
+You are expert Java, Spring boot 3 microservices developer. 
+You are given a schema and and an openapi specification .
+
+Generate java 17, springboot 3.1.7 based micro services with error handling and 
+retry mechanisms based on the given schema and openapi specification. 
+
+Relational schema is given in the context below. 
+The tables and entity mapping is as below.
+1. Books table maps to Book entity
+2. Publishers table maps to Publisher entity.
+3. Book entity has a reference to Publisher entity via Book.publisher_id
+   that is books to publishers is one to one relationship. Publisher can have many books.
+4. Create Java Entity with relations between tables
+5. Create the entities and repository for the above relations.
+
+Java project group is com.example and artifact id is lws.
+Entities should have package of com.example.lws.models.
+Add getters and setters to all entities.
+All arguments and no argument constructors are generated for all entities.
+Model the entiries by taking the primary and foreign keys into consideration.
+As example, Books entity refers to Publisher entity vi its attribute publisher.id
+Restcontrollers should have package of com.example.lws.web .
+Repository java files should have package of com.example.lws.repository.
+Service java files should have package of com.example.lws.services.
+Create both services interface and impl are in the same package of com.example.lws.services
+Main spring boot application should have package of com.example.lws .
+Add all imports in the jave files.
+Use the jakarta.persistence package for all the jpa annotations
+
+Spring Boot Packages used are :
+Spring boot 3.1.7
+Java 17
+Maven
+Group : com.example
+artifact: lws
+package : com.example.lws
+packaging : jar
+Spring web : Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
+Spring Data JPA :Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate.
+H2 Database : Provides a fast in-memory database that supports JDBC API and R2DBC access, with a small (2mb) footprint. Supports embedded and server modes as well as a browser based console application.
+Lombok : Java annotation library which helps to reduce boilerplate code.
+"""
+openapi: 3.0.1
+info:
+  title: Library Management System API
+  description: This API provides operations for managing books in a library.
+  version: 1.0.0
+servers:
+  - url: https://lms.com/books
+    description: Production server
+  - url: https://qa.lms.com/books
+    description: QA server
+paths:
+  /books:
+    get:
+      summary: Get a list of all books
+      tags: [Books]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+      operationId: getAllBooks
+    post:
+      summary: Create a new book
+      tags: [Books]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: createBook
+  /books/{title}:
+    get:
+      summary: Get a book by its title
+      tags: [Books]
+      parameters:
+        - name: title
+          in: path
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: getBookByTitle
+    put:
+      summary: Update a book by its title
+      tags: [Books]
+      parameters:
+        - name: title
+          in: path
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: updateBookByTitle
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        author:
+          type: string
+          maxLength: 255
+        publisher:
+          type: integer
+        "year-of-publication":
+          type: integer
+        isbn:
+          type: string
+          maxLength: 20
+          unique: true
+        price:
+          type: number
+          format: decimal
+        "quantity-in-stock":
+          type: integer
+          default: 0
+        "quantity-available":
+          type: integer
+          default: 0
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+"""
+"""
+-- Drop tables if exist
+DROP TABLE IF EXISTS RENTAL_TRANSACTIONS CASCADE;
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+DROP TABLE IF EXISTS VENDORS CASCADE;
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create PUBLISHERS table
+CREATE TABLE PUBLISHERS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(20),
+    EMAIL VARCHAR(50),
+    PRIMARY KEY (ID)
+);
+
+-- Create BOOKS table
+CREATE TABLE BOOKS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT NOT NULL,
+    "YEAR-OF-PUBLICATION" INT,
+    ISBN VARCHAR(20) UNIQUE,
+    PRICE DECIMAL(7,2) NOT NULL,
+    "QUANTITY-IN-STOCK" INT DEFAULT 0,
+    "QUANTITY-AVAILABLE" INT DEFAULT 0,
+    PRIMARY KEY (ID),
+    FOREIGN KEY (PUBLISHER) REFERENCES PUBLISHERS(ID)
+);
+
+-- Create VENDORS table
+CREATE TABLE VENDORS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(20),
+    EMAIL VARCHAR(50),
+    PRIMARY KEY (ID)
+);
+
+-- Create CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(20),
+    EMAIL VARCHAR(50),
+    "SUBSCRIPTION-AMOUNT" DECIMAL(7,2),
+    "SUBSCRIPTION-START-DATE" DATE,
+    "SUBSCRIPTION-END-DATE" DATE,
+    PRIMARY KEY (ID)
+);
+
+-- Create RENTAL_TRANSACTIONS table
+CREATE TABLE RENTAL_TRANSACTIONS (
+    ID INT NOT NULL AUTO_INCREMENT,
+    "CUSTOMER-ID" INT NOT NULL,
+    "BOOK-ID" INT NOT NULL,
+    "RENTAL-DATE" DATE,
+    "RETURN-DATE" DATE,
+    "FINE-AMOUNT" DECIMAL(7,2),
+    PRIMARY KEY (ID),
+    FOREIGN KEY ("CUSTOMER-ID") REFERENCES CUSTOMERS(ID),
+    FOREIGN KEY ("BOOK-ID") REFERENCES BOOKS(ID)
+);
+"""

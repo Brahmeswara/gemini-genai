@@ -1,0 +1,90 @@
+
+You are expert Java, Spring boot 3 microservices developer. 
+You are given a schema and and an openapi specification .
+
+Generate java 17, springboot 3.1.7 based micro services with error handling and 
+retry mechanisms based on the given schema and openapi specification.
+
+Relational schema is given in the context below. 
+The tables and entity mapping is as below.
+1. Books table maps to Book entity
+2. Publishers table maps to Publisher entity.
+3. Book entity has a reference to Publisher entity via Book.publisher_id
+   that is books to publishers is one to one relationship. Publisher can have many books.
+4. Create Java Entity with relations between tables
+5. Create the entities and repository for the above relations.
+
+Java project group is com.example and artifact id is lws.
+Entities should have package of com.example.lws.models.
+Add getters and setters to all entities.
+All arguments and no argument constructors are generated for all entities.
+Model the entiries by taking the primary and foreign keys into consideration.
+As example, Books entity refers to Publisher entity vi its attribute publisher.id
+Restcontrollers should have package of com.example.lws.web .
+Repository java files should have package of com.example.lws.repository.
+Service java files should have package of com.example.lws.services.
+Create both services interface and impl are in the same package of com.example.lws.services
+Main spring boot application should have package of com.example.lws .
+Add all imports in the jave files.
+Use the jakarta.persistence package for all the jpa annotations
+"""
+-- Drop the tables if they already exist
+DROP TABLE IF EXISTS RENTAL_TRANSACTIONS CASCADE;
+DROP TABLE IF EXISTS CUSTOMERS CASCADE;
+DROP TABLE IF EXISTS VENDORS CASCADE;
+DROP TABLE IF EXISTS BOOKS CASCADE;
+DROP TABLE IF EXISTS PUBLISHERS CASCADE;
+
+-- Create the PUBLISHERS table
+CREATE TABLE PUBLISHERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the BOOKS table
+CREATE TABLE BOOKS (
+    ID INT PRIMARY KEY,
+    TITLE VARCHAR(255) NOT NULL,
+    AUTHOR VARCHAR(255),
+    PUBLISHER INT REFERENCES PUBLISHERS(ID),
+    "YEAR-OF-PUBLICATION" INT,
+    ISBN VARCHAR(255) UNIQUE,
+    PRICE DECIMAL(10, 2),
+    "QUANTITY-IN-STOCK" INT DEFAULT 0,
+    "QUANTITY-AVAILABLE" INT DEFAULT 0
+);
+
+-- Create the VENDORS table
+CREATE TABLE VENDORS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255)
+);
+
+-- Create the CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+    ADDRESS VARCHAR(255),
+    PHONE VARCHAR(255),
+    EMAIL VARCHAR(255) UNIQUE,
+    "SUBSCRIPTION-AMOUNT" DECIMAL(10, 2),
+    "SUBSCRIPTION-START-DATE" DATE,
+    "SUBSCRIPTION-END-DATE" DATE
+);
+
+-- Create the RENTAL_TRANSACTIONS table
+CREATE TABLE RENTAL_TRANSACTIONS (
+    ID INT PRIMARY KEY,
+    "CUSTOMER-ID" INT REFERENCES CUSTOMERS(ID),
+    "BOOK-ID" INT REFERENCES BOOKS(ID),
+    "RENTAL-DATE" DATE,
+    "RETURN-DATE" DATE,
+    "FINE-AMOUNT" DECIMAL(10, 2)
+);
+"""

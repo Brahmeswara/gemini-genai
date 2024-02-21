@@ -1,9 +1,0 @@
-gen-ai-config-files:
-  - LWS\small\config.yaml
-base-output-dir: 
-overwrite_if_exists: true
-process-profiles:
-  - decorator-type: ddl
-    copy-to : schema.sql
-  - decorator-type: dml
-    copy-to : data.sql

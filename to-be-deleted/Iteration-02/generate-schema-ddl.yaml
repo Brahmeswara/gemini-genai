@@ -1,0 +1,11 @@
+version : v1
+kind : schmea
+metadata:
+    name : generated-schema-ddl
+    description : "Generate database schema from the promots and save"
+spec:
+    chain: false
+    prompts:
+        - text : |
+            Given a typical order and products, please generate a database schema for h2 in-memory database
+      

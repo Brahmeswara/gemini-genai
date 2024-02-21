@@ -1,0 +1,24 @@
+version : v1
+kind : schmea-to-openapi-spec
+metadata:
+    name : 02-lms-publisher-openapi-spec
+    description : "Generate publisher openaapi spec given the publisher schema"
+    do-not-generate-take-existing-instead : true
+spec:
+    prompts:
+        - text : |
+            Given the business entities and its attributes, generate an openapi spec for 
+            get list of all publishers
+            creating a new publisher
+            fetching a publisher by name 
+            editing an existing publisher
+
+            add validations and its error handling
+            use openapi spec 3.0.1
+
+            production url is https://lms.com/publishers
+            qa url is https://qa.lms.com/publishers
+
+          ctx :
+            - output-of: 01-lms-datahub-ddl
+

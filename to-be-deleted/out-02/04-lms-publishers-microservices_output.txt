@@ -1,0 +1,427 @@
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "BOOKS")
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String author;
+
+    @Column(nullable = false)
+    private Integer publisher;
+
+    @Column(nullable = false)
+    private Integer yearOfPublication;
+
+    @Column(nullable = false, unique = true)
+    private String isbn;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
+    private Integer quantityInStock;
+
+    @Column(nullable = false)
+    private Integer quantityAvailable;
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "CUSTOMERS")
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private Double subscriptionAmount;
+
+    @Column(nullable = false)
+    private Date subscriptionStartDate;
+
+    @Column(nullable = false)
+    private Date subscriptionEndDate;
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "PUBLISHERS")
+public class Publisher {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "RENTAL_TRANSACTIONS")
+public class RentalTransaction {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private Integer customerId;
+
+    @Column(nullable = false)
+    private Integer bookId;
+
+    @Column(nullable = false)
+    private Date rentalDate;
+
+    @Column
+    private Date returnDate;
+
+    @Column
+    private Double fineAmount;
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "VENDORS")
+public class Vendor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BookRepository extends JpaRepository<Book, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.RentalTransaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface RentalTransactionRepository extends JpaRepository<RentalTransaction, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Vendor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface VendorRepository extends JpaRepository<Vendor, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    public Book getBookById(Integer id) {
+        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found with id : " + id));
+    }
+
+    public Book createBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    public Book updateBook(Book book) {
+        Book existingBook = bookRepository.findById(book.getId()).orElseThrow(() -> new RuntimeException("Book not found with id : " + book.getId()));
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPublisher(book.getPublisher());
+        existingBook.setYearOfPublication(book.getYearOfPublication());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setPrice(book.getPrice());
+        existingBook.setQuantityInStock(book.getQuantityInStock());
+        existingBook.setQuantityAvailable(book.getQuantityAvailable());
+        return bookRepository.save(existingBook);
+    }
+
+    public void deleteBook(Integer id) {
+        bookRepository.deleteById(id);
+    }
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Customer;
+import com.example.lws.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class CustomerService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    public Customer getCustomerById(Integer id) {
+        return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found with id : " + id));
+    }
+
+    public Customer createCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    public Customer updateCustomer(Customer customer) {
+        Customer existingCustomer = customerRepository.findById(customer.getId()).orElseThrow(() -> new RuntimeException("Customer not found with id : " + customer.getId()));
+        existingCustomer.setName(customer.getName());
+        existingCustomer.setAddress(customer.getAddress());
+        existingCustomer.setPhone(customer.getPhone());
+        existingCustomer.setEmail(customer.getEmail());
+        existingCustomer.setSubscriptionAmount(customer.getSubscriptionAmount());
+        existingCustomer.setSubscriptionStartDate(customer.getSubscriptionStartDate());
+        existingCustomer.setSubscriptionEndDate(customer.getSubscriptionEndDate());
+        return customerRepository.save(existingCustomer);
+    }
+
+    public void deleteCustomer(Integer id) {
+        customerRepository.deleteById(id);
+    }
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
+    public Publisher getPublisherById(Integer id) {
+        return publisherRepository.findById(id).orElseThrow(() -> new RuntimeException("Publisher not found with id : " + id));
+    }
+
+    public Publisher createPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    public Publisher updatePublisher(Publisher publisher) {
+        Publisher existingPublisher = publisherRepository.findById(publisher.getId()).orElseThrow(() -> new RuntimeException("Publisher not found with id : " + publisher.getId()));
+        existingPublisher.setName(publisher.getName());
+        existingPublisher.setAddress(publisher.getAddress());
+        existingPublisher.setPhone(publisher.getPhone());
+        existingPublisher.setEmail(publisher.getEmail());
+        return publisherRepository.save(existingPublisher);
+    }
+
+    public void deletePublisher(Integer id) {
+        publisherRepository.deleteById(id);
+    }
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.RentalTransaction;
+import com.example.lws.repository.RentalTransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class RentalTransactionService {
+
+    @Autowired
+    private RentalTransactionRepository rentalTransactionRepository;
+
+    public List<RentalTransaction> getAllRentalTransactions() {
+        return rentalTransactionRepository.findAll();
+    }
+
+    public RentalTransaction getRentalTransactionById(Integer id) {
+        return rentalTransactionRepository.findById(id).orElseThrow(() -> new RuntimeException("RentalTransaction not found with id : " + id));
+    }
+
+    public RentalTransaction createRentalTransaction(RentalTransaction rentalTransaction) {
+        return rentalTransactionRepository.save(rentalTransaction);
+    }
+
+    public RentalTransaction updateRentalTransaction(RentalTransaction rentalTransaction) {
+        RentalTransaction existingRentalTransaction = rentalTransactionRepository.findById(rentalTransaction.getId()).orElseThrow(() -> new RuntimeException("RentalTransaction not found with id : " + rentalTransaction.getId()));
+        existingRentalTransaction.setCustomerId(rentalTransaction.getCustomerId());
+        existingRentalTransaction.setBookId(rentalTransaction.getBookId());
+        existingRentalTransaction.setRentalDate(rentalTransaction.getRentalDate());
+        existingRentalTransaction.setReturnDate(rentalTransaction.getReturnDate());
+        existingRentalTransaction.setFineAmount(rentalTransaction.getFineAmount());
+        return rentalTransactionRepository.save(existingRentalTransaction);
+    }

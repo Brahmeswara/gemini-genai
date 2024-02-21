@@ -1,0 +1,324 @@
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "BOOKS")
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "TITLE", nullable = false)
+    private String title;
+
+    @Column(name = "AUTHOR", nullable = false)
+    private String author;
+
+    @ManyToOne
+    @JoinColumn(name = "PUBLISHER", nullable = false)
+    private Publisher publisher;
+
+    @Column(name = "YEAR-OF-PUBLICATION")
+    private Integer yearOfPublication;
+
+    @Column(name = "ISBN", unique = true, nullable = false)
+    private String isbn;
+
+    @Column(name = "PRICE", nullable = false)
+    private BigDecimal price;
+
+    @Column(name = "QUANTITY-IN-STOCK", nullable = false)
+    private Integer quantityInStock;
+
+    @Column(name = "QUANTITY-AVAILABLE", nullable = false)
+    private Integer quantityAvailable;
+
+    // Getters and setters omitted for brevity
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "PUBLISHERS")
+public class Publisher {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "NAME", nullable = false)
+    private String name;
+
+    @Column(name = "ADDRESS")
+    private String address;
+
+    @Column(name = "PHONE")
+    private String phone;
+
+    @Column(name = "EMAIL")
+    private String email;
+
+    @OneToMany(mappedBy = "publisher")
+    private List<Book> books;
+
+    // Getters and setters omitted for brevity
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+import java.util.List;
+
+public interface BookService {
+
+    List<Book> getAllBooks();
+
+    Book getBookByTitle(String title);
+
+    Book createBook(Book book);
+
+    Book updateBook(String title, Book book);
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+import java.util.List;
+
+public interface PublisherService {
+
+    List<Publisher> getAllPublishers();
+
+    Publisher getPublisherById(Integer id);
+
+    Publisher createPublisher(Publisher publisher);
+
+    Publisher updatePublisher(Integer id, Publisher publisher);
+
+}
+```
+
+```java
+package com.example.lws.services.impl;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class BookServiceImpl implements BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    public Book getBookByTitle(String title) {
+        return bookRepository.findByTitle(title);
+    }
+
+    @Override
+    public Book createBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book updateBook(String title, Book book) {
+        Book existingBook = bookRepository.findByTitle(title);
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPublisher(book.getPublisher());
+        existingBook.setYearOfPublication(book.getYearOfPublication());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setPrice(book.getPrice());
+        existingBook.setQuantityInStock(book.getQuantityInStock());
+        existingBook.setQuantityAvailable(book.getQuantityAvailable());
+        return bookRepository.save(existingBook);
+    }
+}
+```
+
+```java
+package com.example.lws.services.impl;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PublisherServiceImpl implements PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Override
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
+    @Override
+    public Publisher getPublisherById(Integer id) {
+        return publisherRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Publisher createPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public Publisher updatePublisher(Integer id, Publisher publisher) {
+        Publisher existingPublisher = publisherRepository.findById(id).orElse(null);
+        if (existingPublisher != null) {
+            existingPublisher.setName(publisher.getName());
+            existingPublisher.setAddress(publisher.getAddress());
+            existingPublisher.setPhone(publisher.getPhone());
+            existingPublisher.setEmail(publisher.getEmail());
+            return publisherRepository.save(existingPublisher);
+        }
+        return null;
+    }
+}
+```
+
+```java
+package com.example.lws.web;
+
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;
+
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
+    }
+
+    @GetMapping("/{title}")
+    public Book getBookByTitle(@PathVariable String title) {
+        return bookService.getBookByTitle(title);
+    }
+
+    @PostMapping
+    public Book createBook(@RequestBody Book book) {
+        return bookService.createBook(book);
+    }
+
+    @PutMapping("/{title}")
+    public Book updateBook(@PathVariable String title, @RequestBody Book book) {
+        return bookService.updateBook(title, book);
+    }
+}
+```
+
+```java
+package com.example.lws.web;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/publishers")
+public class PublisherController {
+
+    @Autowired
+    private PublisherService publisherService;
+
+    @GetMapping
+    public List<Publisher> getAllPublishers() {
+        return publisherService.getAllPublishers();
+    }
+
+    @GetMapping("/{id}")
+    public Publisher getPublisherById(@PathVariable Integer id) {
+        return publisherService.getPublisherById(id);
+    }
+
+    @PostMapping
+    public Publisher createPublisher(@RequestBody Publisher publisher) {
+        return publisherService.createPublisher(publisher);
+    }
+
+    @PutMapping("/{id}")
+    public Publisher updatePublisher(@PathVariable Integer id, @RequestBody Publisher publisher) {
+        return publisherService.updatePublisher(id, publisher);
+    }
+}
+```
+
+```java
+package com.example.lws;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LibraryManagementSystemApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(LibraryManagementSystemApplication.class, args);
+    }
+
+}
+```

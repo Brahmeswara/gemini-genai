@@ -1,0 +1,31 @@
+version : v1
+kind : schmea-ddl
+metadata:
+    name : 01-lms-datahub-ddl
+    description : "Generate database schema from the prompts and save"
+spec:
+    prompts:
+        - text : |
+            Given the business objects and their attributes, please generate a relational database schema for h2 in-memory database.
+            make sure to drop the table if exists with casade and create the table
+            Please follow the below table and its attributes naming convenvetions 
+              1. Names in h2 in-memory must begin with a letter (a-z) or underscore (_).
+              2. The subsequent characters in a name can be letters, digits (0-9), or underscores.
+              3. do not prefix the attribute names with the table name
+          ctx :
+            - value: |
+                """
+                - Business entity name PUBLISHERS with attributes ID, NAME, ADDRESS, PHONE, and EMAIL. 
+                - Business entity name BOOKS with attributes ID, TITLE, AUTHOR, PUBLISHER, YEAR-OF-PUBLICATION, ISBN, PRICE, QUANTITY-IN-STOCK, and QUANTITY-AVAILABLE. 
+                - Published can have many Books published. 
+                - Business Entity name VENDORS with attributes ID, NAME, ADDRESS, PHONE, and EMAIL. 
+                - Business entity name CUSTOMERS with attributes
+                  ID, NAME, ADDRESS, PHONE,
+                  EMAIL, SUBSCRIPTION-AMOUNT,
+                  SUBSCRIPTION-START-DATE, and SUBSCRIPTION-END-DATE. 
+                  - Business entity name RENTAL-TRANSACTIONS
+                  with attributes ID, CUSTOMER-ID, BOOK-ID, RENTAL-DATE, RETURN-DATE, and FINE-AMOUNT. 
+
+                  When the books rented from library this information is entered in RENTAL-TRANSACTIONS table 
+                  with appropriate references. 
+                """

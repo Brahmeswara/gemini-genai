@@ -1,0 +1,33 @@
+version : v1
+kind : business-functionality
+metadata:
+    name : 06-lms-book-search-functionality
+    description : "Generate LMS books search functionality"
+spec:
+    prompts:
+        - text : |
+            Given the related publisher and books schema, generate a book search code based on angular ui .
+            additionally openapi spec also is given as refefence to genrate the ui code.
+
+            One should be able to search by By author, By publications, By category, By keyword 
+            1. Search by author: 
+                Provide a search field where users can enter the name of the author. 
+                Retrieve all books in your system that match the entered author name. 
+                Display the search results to the user. 
+            2. Search by publication: 
+                Provide a search field where users can enter the publication details, such as the publisher or publication year. 
+                Retrieve all books in your system that match the entered publication details. 
+                Display the search results to the user. 
+            3. Search by category: 
+                Provide a list of categories or genres that users can select from. 
+                Allow users to choose a specific category or multiple categories. 
+                Retrieve all books in your system that belong to the selected categories. 
+                Display the search results to the user. 
+            4. Search by keyword: 
+                Provide a search field where users can enter a keyword related to the book they are looking for.
+                Retrieve all books in your system that have the keyword in their title, author, description, or any other relevant fields.
+                Display the search results to the user.
+          ctx :
+            - output-of: 01-lms-datahub-ddl
+            - output-of: 03-lms-books-openapi-spec
+            - output-of: 02-lms-publisher-openapi-spec

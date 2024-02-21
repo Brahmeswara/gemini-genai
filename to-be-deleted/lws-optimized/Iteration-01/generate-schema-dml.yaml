@@ -1,0 +1,12 @@
+version : v1
+kind : schmea-dml
+metadata:
+    name : generated-schema-dml
+    description : "Generate DML based on a given schema ddl"
+spec:
+    prompts:
+        - text : |
+            Generate a sample data to insert into h2 in-memory database tables. 
+            database schema is given in the context.
+          ctx :
+            - output-of: generated-schema-ddl

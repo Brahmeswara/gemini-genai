@@ -1,0 +1,222 @@
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "books")
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(length = 255, nullable = false)
+    private String title;
+
+    @Column(length = 255)
+    private String author;
+
+    @Column(name = "publisher_id", nullable = false)
+    private Integer publisherId;
+
+    @Column(name = "year-of-publication", nullable = false)
+    private Integer yearOfPublication;
+
+    @Column(length = 20, unique = true, nullable = false)
+    private String isbn;
+
+    @Column(precision = 7, scale = 2, nullable = false)
+    private BigDecimal price;
+
+    @Column(name = "quantity-in-stock")
+    private Integer quantityInStock;
+
+    @Column(name = "quantity-available")
+    private Integer quantityAvailable;
+
+    // Getters and setters
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "publishers")
+public class Publisher {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(length = 255, nullable = false)
+    private String name;
+
+    @Column(length = 255)
+    private String address;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 50)
+    private String email;
+
+    // Getters and setters
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Integer> {
+
+    Book findByTitle(String title);
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+import java.util.List;
+
+public interface BookService {
+
+    List<Book> getAllBooks();
+
+    Book getBookByTitle(String title);
+
+    Book createBook(Book book);
+
+    Book updateBookByTitle(String title, Book book);
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class BookServiceImpl implements BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    public Book getBookByTitle(String title) {
+        return bookRepository.findByTitle(title);
+    }
+
+    @Override
+    public Book createBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book updateBookByTitle(String title, Book book) {
+        Book existingBook = bookRepository.findByTitle(title);
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPublisherId(book.getPublisherId());
+        existingBook.setYearOfPublication(book.getYearOfPublication());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setPrice(book.getPrice());
+        existingBook.setQuantityInStock(book.getQuantityInStock());
+        existingBook.setQuantityAvailable(book.getQuantityAvailable());
+        return bookRepository.save(existingBook);
+    }
+}
+```
+
+```java
+package com.example.lws.web;
+
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;
+
+    @GetMapping
+    public ResponseEntity<List<Book>> getAllBooks() {
+        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{title}")
+    public ResponseEntity<Book> getBookByTitle(@PathVariable String title) {
+        Book book = bookService.getBookByTitle(title);
+        if (book == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        return new ResponseEntity<>(bookService.createBook(book), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{title}")
+    public ResponseEntity<Book> updateBookByTitle(@PathVariable String title, @RequestBody Book book) {
+        Book existingBook = bookService.getBookByTitle(title);
+        if (existingBook == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(bookService.updateBookByTitle(title, book), HttpStatus.OK);
+    }
+}
+```
+
+```java
+package com.example.lws;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LwsApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(LwsApplication.class, args);
+    }
+}
+```

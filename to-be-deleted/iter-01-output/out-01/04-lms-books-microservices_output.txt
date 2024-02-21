@@ -1,0 +1,316 @@
+```java
+// Import required packages
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+// Main class of the Spring Boot application
+public class LwsApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(LwsApplication.class, args);
+    }
+}
+```
+
+```java
+// Import required packages
+import javax.persistence.*;
+
+@Entity
+// Entity annotation specifies that the class is mapped to a database table
+@Table(name = "BOOKS")
+// Table annotation specifies the name of the table that the class is mapped to
+public class Book {
+
+    @Id
+    // Id annotation specifies that the attribute is the primary key of the table
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // GeneratedValue annotation specifies the generation strategy for the primary key
+    private Integer id;
+
+    @Column(name = "TITLE", nullable = false)
+    // Column annotation specifies the name and nullability of the column in the table
+    private String title;
+
+    @Column(name = "AUTHOR")
+    // Column annotation specifies the name and nullability of the column in the table
+    private String author;
+
+    @Column(name = "PUBLISHER")
+    // Column annotation specifies the name and nullability of the column in the table
+    private Integer publisher;
+
+    @Column(name = "YEAR_OF_PUBLICATION")
+    // Column annotation specifies the name and nullability of the column in the table
+    private Integer yearOfPublication;
+
+    @Column(name = "ISBN", unique = true)
+    // Column annotation specifies the name, uniqueness, and nullability of the column in the table
+    private String isbn;
+
+    @Column(name = "PRICE")
+    // Column annotation specifies the name and nullability of the column in the table
+    private Double price;
+
+    @Column(name = "QUANTITY_IN_STOCK")
+    // Column annotation specifies the name and nullability of the column in the table
+    private Integer quantityInStock;
+
+    @Column(name = "QUANTITY_AVAILABLE")
+    // Column annotation specifies the name and nullability of the column in the table
+    private Integer quantityAvailable;
+
+    // Getters and setters for the attributes
+}
+```
+
+```java
+// Import required packages
+import javax.persistence.*;
+
+@Entity
+// Entity annotation specifies that the class is mapped to a database table
+@Table(name = "PUBLISHERS")
+// Table annotation specifies the name of the table that the class is mapped to
+public class Publisher {
+
+    @Id
+    // Id annotation specifies that the attribute is the primary key of the table
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // GeneratedValue annotation specifies the generation strategy for the primary key
+    private Integer id;
+
+    @Column(name = "NAME", nullable = false)
+    // Column annotation specifies the name, uniqueness, and nullability of the column in the table
+    private String name;
+
+    @Column(name = "ADDRESS")
+    // Column annotation specifies the name and nullability of the column in the table
+    private String address;
+
+    @Column(name = "PHONE")
+    // Column annotation specifies the name and nullability of the column in the table
+    private String phone;
+
+    @Column(name = "EMAIL")
+    // Column annotation specifies the name and nullability of the column in the table
+    private String email;
+
+    // Getters and setters for the attributes
+}
+```
+
+```java
+// Import required packages
+import com.example.lws.models.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Integer> {
+}
+```
+
+```java
+// Import required packages
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+}
+```
+
+```java
+// Import required packages
+import com.example.lws.models.Book;
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.BookRepository;
+import com.example.lws.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+// Service annotation indicates that the class is a service
+public class BookService {
+
+    @Autowired
+    // Autowired annotation provides automatic dependency injection
+    private BookRepository bookRepository;
+
+    @Autowired
+    // Autowired annotation provides automatic dependency injection
+    private PublisherRepository publisherRepository;
+
+    // Method to get all books
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    // Method to get a book by its title
+    public Book getBookByTitle(String title) {
+        return bookRepository.findByTitle(title);
+    }
+
+    // Method to create a new book
+    public Book createBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    // Method to update a book by its title
+    public Book updateBook(String title, Book bookDetails) {
+        Book book = bookRepository.findByTitle(title);
+        book.setTitle(bookDetails.getTitle());
+        book.setAuthor(bookDetails.getAuthor());
+        book.setPublisher(bookDetails.getPublisher());
+        book.setYearOfPublication(bookDetails.getYearOfPublication());
+        book.setIsbn(bookDetails.getIsbn());
+        book.setPrice(bookDetails.getPrice());
+        book.setQuantityInStock(bookDetails.getQuantityInStock());
+        book.setQuantityAvailable(bookDetails.getQuantityAvailable());
+        return bookRepository.save(book);
+    }
+
+    // Method to delete a book by its title
+    public void deleteBook(String title) {
+        Book book = bookRepository.findByTitle(title);
+        bookRepository.delete(book);
+    }
+
+    // Method to get all publishers
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
+    // Method to get a publisher by its id
+    public Publisher getPublisherById(Integer id) {
+        return publisherRepository.findById(id).get();
+    }
+
+    // Method to create a new publisher
+    public Publisher createPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    // Method to update a publisher by its id
+    public Publisher updatePublisher(Integer id, Publisher publisherDetails) {
+        Publisher publisher = publisherRepository.findById(id).get();
+        publisher.setName(publisherDetails.getName());
+        publisher.setAddress(publisherDetails.getAddress());
+        publisher.setPhone(publisherDetails.getPhone());
+        publisher.setEmail(publisherDetails.getEmail());
+        return publisherRepository.save(publisher);
+    }
+
+    // Method to delete a publisher by its id
+    public void deletePublisher(Integer id) {
+        Publisher publisher = publisherRepository.findById(id).get();
+        publisherRepository.delete(publisher);
+    }
+}
+```
+
+```java
+// Import required packages
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+// RestController annotation indicates that the class is a controller for web requests
+@RequestMapping("/books")
+// RequestMapping annotation maps the class to a specific URL path
+public class BookController {
+
+    @Autowired
+    // Autowired annotation provides automatic dependency injection
+    private BookService bookService;
+
+    // GET all books
+    @GetMapping
+    // GetMapping annotation maps the method to a GET request
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
+    }
+
+    // GET a book by its title
+    @GetMapping("/{title}")
+    // GetMapping annotation maps the method to a GET request with a path variable
+    public Book getBookByTitle(@PathVariable String title) {
+        return bookService.getBookByTitle(title);
+    }
+
+    // POST a new book
+    @PostMapping
+    // PostMapping annotation maps the method to a POST request
+    public Book createBook(@RequestBody Book book) {
+        return bookService.createBook(book);
+    }
+
+    // PUT a book by its title
+    @PutMapping("/{title}")
+    // PutMapping annotation maps the method to a PUT request with a path variable
+    public Book updateBook(@PathVariable String title, @RequestBody Book bookDetails) {
+        return bookService.updateBook(title, bookDetails);
+    }
+
+    // DELETE a book by its title
+    @DeleteMapping("/{title}")
+    // DeleteMapping annotation maps the method to a DELETE request with a path variable
+    public void deleteBook(@PathVariable String title) {
+        bookService.deleteBook(title);
+    }
+}
+```
+
+```java
+// Import required packages
+import com.example.lws.models.Publisher;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+// RestController annotation indicates that the class is a controller for web requests
+@RequestMapping("/publishers")
+// RequestMapping annotation maps the class to a specific URL path
+public class PublisherController {
+
+    @Autowired
+    // Autowired annotation provides automatic dependency injection
+    private BookService bookService;
+
+    // GET all publishers
+    @GetMapping
+    // GetMapping annotation maps the method to a GET request
+    public List<Publisher> getAllPublishers() {
+        return bookService.getAllPublishers();
+    }
+
+    // GET a publisher by its id
+    @GetMapping("/{id}")
+    // GetMapping annotation maps the method to a GET request with a path variable
+    public Publisher getPublisherById(@PathVariable Integer id) {
+        return bookService.getPublisherById(id);
+    }
+
+    // POST a new publisher
+    @PostMapping
+    // PostMapping annotation maps the method to a POST request
+    public Publisher createPublisher(@RequestBody Publisher publisher) {
+        return bookService.createPublisher(publisher);
+    }
+
+    // PUT a publisher by its id
+    @PutMapping("/{id}")
+    // PutMapping annotation maps the method to a PUT request with a path variable
+    public Publisher updatePublisher(@PathVariable Integer id, @RequestBody Publisher publisherDetails) {
+        return bookService.updatePublisher(id, publisherDetails);
+    }
+
+    // DELETE a publisher by its id
+    @DeleteMapping("/{id}")
+    // DeleteMapping annotation maps the method to a DELETE request with a path variable
+    public void deletePublisher(@PathVariable Integer id) {
+        bookService.deletePublisher(id);
+    }
+}
+```

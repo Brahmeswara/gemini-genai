@@ -1,0 +1,3 @@
+base-project-dir : C:/Users/91998/ai/gemini/lws/src/main/java
+file-selection-include  : .java
+output-dir : lms-qa-unittest-gen-output

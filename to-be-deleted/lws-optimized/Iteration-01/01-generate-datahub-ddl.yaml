@@ -1,0 +1,33 @@
+version : v1
+kind : schmea-ddl
+metadata:
+    name : 01-lms-datahub-ddl
+    description : "Generate database schema from the prompts and save"
+spec:
+    prompts:
+        - text : |
+            Given the business objects and their attributes, please generate a relational database schema for h2 in-memory database.
+            make sure to drop the table if exists with casade and create the table
+          ctx :
+            - value: |
+                """
+                Business entity name is Books with the below attributes. 
+                Business entity name PUBLISHERS with attributes PUBLISHERS-ID, PUBLISHERS-NAME, PUBLISHERS-ADDRESS, PUBLISHERS-PHONE, and PUBLISHERS-EMAIL. 
+  
+                - Business entity name BOOKS with attributes BOOKS-ID, BOOKS-TITLE, BOOKS-AUTHOR, BOOKS-PUBLISHER, BOOKS-YEAR-OF-PUBLICATION, BOOKS-ISBN, BOOKS-PRICE, BOOKS-QUANTITY-IN-STOCK, and BOOKS-QUANTITY-AVAILABLE. 
+
+                Published can have many Books published. 
+                -  Business Entity name VENDORS with attributes VENDORS-ID, VENDORS-NAME, VENDORS-ADDRESS, VENDORS-PHONE, and VENDORS-EMAIL. 
+  
+                - Business entity name CUSTOMERS with attributes
+                  CUSTOMERS-ID, CUSTOMERS-NAME, CUSTOMERS-ADDRESS, CUSTOMERS-PHONE,
+                  CUSTOMERS-EMAIL, CUSTOMERS-SUBSCRIPTION-AMOUNT,
+                  CUSTOMERS-SUBSCRIPTION-START-DATE, and CUSTOMERS-SUBSCRIPTION-END-DATE. 
+                    
+                    - Business entity name RENTAL-TRANSACTIONS
+                    with attributes RENTAL-TRANSACTIONS-ID, RENTAL-TRANSACTIONS-CUSTOMER-ID,
+                    RENTAL-TRANSACTIONS-BOOK-ID, RENTAL-TRANSACTIONS-RENTAL-DATE,
+                    RENTAL-TRANSACTIONS-RETURN-DATE, and RENTAL-TRANSACTIONS-FINE-AMOUNT. 
+
+                    When the books rented from library this information is entered in RENTAL-TRANSACTIONS table with appropriate references. 
+                """

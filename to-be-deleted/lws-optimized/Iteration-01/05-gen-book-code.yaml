@@ -1,0 +1,23 @@
+version : v1
+kind : openapi-to-springboot-microservices
+metadata:
+    name : 04-lms-books-microservices
+    description : "Generate java springboot microservices given the openapi spec"
+spec:
+    prompts:
+        - text : |
+            Generate java 17, springboot 3.1.7 based micro services with error handling and 
+            retry mechanisms based on the openapi spec given.
+            group is com.example and artifact id is lws
+            entities should have package of com.example.lws.models
+            add getters and setters to all entities
+            restcontrollers should have package of com.example.lws.web
+            repository java files should have package of com.example.lws.repository
+            service java files should have package of com.example.lws.services
+            make sure that both services interface and impl are in the same package of com.example.lws.services
+            main spring boot application should have package of com.example.lws
+            make sure to add all imports in the jave files
+          ctx :
+            #- output-of: 02-lms-publisher-openapi-spec
+            - output-of: 03-lms-books-openapi-spec
+            #- output-of: 01-lms-datahub-ddl

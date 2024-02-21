@@ -1,0 +1,249 @@
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "books")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    private String author;
+
+    @ManyToOne
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
+
+    @Column(name = "year_of_publication")
+    private Integer yearOfPublication;
+
+    @Column(unique = true)
+    private String isbn;
+
+    private Double price;
+
+    @Column(name = "quantity_in_stock")
+    private Integer quantityInStock;
+
+    @Column(name = "quantity_available")
+    private Integer quantityAvailable;
+}
+```
+
+```java
+package com.example.lws.models;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "publishers")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Publisher {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    private String address;
+
+    private String phone;
+
+    private String email;
+}
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+```
+
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Book;
+
+import java.util.List;
+
+public interface BookService {
+
+    List<Book> getAllBooks();
+
+    Book getBookById(Long id);
+
+    Book createBook(Book book);
+
+    Book updateBook(Book book);
+
+    void deleteBook(Long id);
+}
+```
+
+```java
+package com.example.lws.services;
+
+import com.example.lws.models.Publisher;
+
+import java.util.List;
+
+public interface PublisherService {
+
+    List<Publisher> getAllPublishers();
+
+    Publisher getPublisherById(Long id);
+
+    Publisher createPublisher(Publisher publisher);
+
+    Publisher updatePublisher(Publisher publisher);
+
+    void deletePublisher(Long id);
+}
+```
+
+```java
+package com.example.lws.services.impl;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import com.example.lws.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class BookServiceImpl implements BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+    }
+
+    @Override
+    public Book createBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book updateBook(Book book) {
+        Book existingBook = bookRepository.findById(book.getId()).orElseThrow(() -> new RuntimeException("Book not found with id: " + book.getId()));
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPublisher(book.getPublisher());
+        existingBook.setYearOfPublication(book.getYearOfPublication());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setPrice(book.getPrice());
+        existingBook.setQuantityInStock(book.getQuantityInStock());
+        existingBook.setQuantityAvailable(book.getQuantityAvailable());
+        return bookRepository.save(existingBook);
+    }
+
+    @Override
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+}
+```
+
+```java
+package com.example.lws.services.impl;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import com.example.lws.services.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PublisherServiceImpl implements PublisherService {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Override
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAll();
+    }
+
+    @Override
+    public Publisher getPublisherById(Long id) {
+        return publisherRepository.findById(id).orElseThrow(() -> new RuntimeException("Publisher not found with id: " + id));
+    }
+
+    @Override
+    public Publisher createPublisher(Publisher publisher) {
+        return publisherRepository.save(publisher);
+    }
+
+    @Override
+    public Publisher updatePublisher(Publisher publisher) {
+        Publisher existingPublisher = publisherRepository.findById(publisher.getId()).orElseThrow(() -> new RuntimeException("Publisher not found with id: " + publisher.getId()));
+        existingPublisher.setName(publisher.getName());
+        existingPublisher.setAddress(publisher.getAddress());
+        existingPublisher.setPhone(publisher.getPhone());
+        existingPublisher.setEmail(publisher.getEmail());
+        return publisherRepository.save(existingPublisher);
+    }
+
+    @Override
+    public void deletePublisher(Long id) {
+        publisherRepository.deleteById(id);
+    }
+}
+```
+
+```java
+package com.example.lws;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class LwsApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(LwsApplication.class, args);
+    }
+
+}
+```

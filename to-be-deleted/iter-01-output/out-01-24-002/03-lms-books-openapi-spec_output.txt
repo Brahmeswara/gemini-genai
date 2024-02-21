@@ -1,0 +1,147 @@
+```yaml
+openapi: 3.0.1
+info:
+  title: Library Management System API
+  description: This API provides operations for managing books in a library.
+  version: 1.0.0
+servers:
+  - url: https://lms.com/books
+    description: Production server
+  - url: https://qa.lms.com/books
+    description: QA server
+paths:
+  /books:
+    get:
+      summary: Get a list of all books
+      tags: [Books]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+      operationId: getAllBooks
+    post:
+      summary: Create a new book
+      tags: [Books]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: createBook
+  /books/{title}:
+    get:
+      summary: Get a book by its title
+      tags: [Books]
+      parameters:
+        - name: title
+          in: path
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: getBookByTitle
+    put:
+      summary: Update a book by its title
+      tags: [Books]
+      parameters:
+        - name: title
+          in: path
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: updateBookByTitle
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        author:
+          type: string
+          maxLength: 255
+        publisher:
+          type: integer
+        "year-of-publication":
+          type: integer
+        isbn:
+          type: string
+          maxLength: 20
+          unique: true
+        price:
+          type: number
+          format: decimal
+        "quantity-in-stock":
+          type: integer
+          default: 0
+        "quantity-available":
+          type: integer
+          default: 0
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+```

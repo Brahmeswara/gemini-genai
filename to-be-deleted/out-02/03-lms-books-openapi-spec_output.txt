@@ -1,0 +1,160 @@
+```openapi
+openapi: 3.0.1
+info:
+  title: LMS Books API
+  description: API for managing books in a library management system
+  version: 1.0.0
+  contact:
+    name: LMS API Support
+    email: support@lms.com
+servers:
+  - url: https://lms.com/books
+    description: Production environment
+  - url: https://qa.lms.com/books
+    description: QA environment
+paths:
+  /books:
+    get:
+      summary: Get list of all books
+      description: Returns a list of all books in the system
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Create a new book
+      description: Creates a new book in the system
+      requestBody:
+        description: Book to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /books/{title}:
+    get:
+      summary: Get a book by title
+      description: Returns a book by its title
+      parameters:
+        - name: title
+          in: path
+          description: Title of the book to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a book by title
+      description: Updates a book by its title
+      parameters:
+        - name: title
+          in: path
+          description: Title of the book to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Book to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the book
+          example: 1
+        title:
+          type: string
+          description: Title of the book
+          example: The Iliad
+        author:
+          type: string
+          description: Author of the book
+          example: Homer
+        publisher:
+          type: integer
+          description: ID of the publisher of the book
+          example: 1
+        year-of-publication:
+          type: integer
+          description: Year of publication of the book
+          example: -800
+        isbn:
+          type: string
+          description: ISBN of the book
+          example: 9780140444445
+        price:
+          type: number
+          description: Price of the book
+          example: 12.99
+        quantity-in-stock:
+          type: integer
+          description: Quantity of the book in stock
+          example: 20
+        quantity-available:
+          type: integer
+          description: Quantity of the book available for rental
+          example: 15
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: Bad Request
+```

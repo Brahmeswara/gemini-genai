@@ -27,7 +27,7 @@ set PYTHONPATH=%MPH_GENAI_FW_HOME%;%MPH_GENAI_FW_HOME%\core;%MPH_GENAI_FW_HOME%\
 
 echo Changing directory to %MPH_GENAI_FW_HOME%
 cd %MPH_GENAI_FW_HOME%
-echo GENAI_OUTPUT_FILE: %GENAI_OUTPUT_FILE%
+
 :: python tools\ttj.py
 python mph-decorator.py
 echo 'Done.'

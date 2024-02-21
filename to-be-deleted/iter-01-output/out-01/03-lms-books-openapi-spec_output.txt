@@ -1,0 +1,155 @@
+```yaml
+openapi: 3.0.1
+info:
+  title: Library API
+  version: 1.0.0
+  description: This API provides CRUD operations for books in a library.
+servers:
+  - url: https://lms.com/books
+    description: Production server
+  - url: https://qa.lms.com/books
+    description: QA server
+paths:
+  /books:
+    get:
+      summary: List all books
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Create a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBook'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+  /books/{title}:
+    get:
+      summary: Get a book by title
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Not Found
+    put:
+      summary: Update a book by title
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: The title of the book
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the book
+        title:
+          type: string
+          description: The title of the book
+        author:
+          type: string
+          description: The author of the book
+        publisher:
+          type: integer
+          description: The publisher of the book
+        yearOfPublication:
+          type: integer
+          description: The year the book was published
+        isbn:
+          type: string
+          description: The ISBN of the book
+        price:
+          type: number
+          description: The price of the book
+        quantityInStock:
+          type: integer
+          description: The quantity of the book in stock
+        quantityAvailable:
+          type: integer
+          description: The quantity of the book available for rent
+    NewBook:
+      type: object
+      required:
+        - title
+        - author
+        - publisher
+        - yearOfPublication
+        - isbn
+        - price
+        - quantityInStock
+        - quantityAvailable
+      properties:
+        title:
+          type: string
+          description: The title of the book
+        author:
+          type: string
+          description: The author of the book
+        publisher:
+          type: integer
+          description: The publisher of the book
+        yearOfPublication:
+          type: integer
+          description: The year the book was published
+        isbn:
+          type: string
+          description: The ISBN of the book
+        price:
+          type: number
+          description: The price of the book
+        quantityInStock:
+          type: integer
+          description: The quantity of the book in stock
+        quantityAvailable:
+          type: integer
+          description: The quantity of the book available for rent
+```
