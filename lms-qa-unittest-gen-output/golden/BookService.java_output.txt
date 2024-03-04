@@ -1,0 +1,65 @@
+```java
+package com.example.lws.services;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.example.lws.models.Book;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+public class BookServiceTest {
+
+    @Mock
+    private BookRepository bookRepository;
+
+    @InjectMocks
+    private BookService bookService;
+
+    @Test
+    void testSaveBook() {
+        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+
+        Mockito.when(bookRepository.save(book)).thenReturn(book);
+
+        Book savedBook = bookService.saveBook(book);
+
+        assertEquals(book, savedBook);
+    }
+
+    @Test
+    void testUpdateBook() {
+        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        Mockito.when(bookRepository.save(book)).thenReturn(book);
+
+        Book updatedBook = bookService.updateBook(book);
+
+        assertEquals(book, updatedBook);
+    }
+
+    @Test
+    void testDeleteBook() {
+        bookService.deleteBook(1L);
+
+        Mockito.verify(bookRepository).deleteById(1L);
+    }
+
+    @Test
+    void testGetBookById() {
+        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+
+        Book foundBook = bookService.getBookById(1L);
+
+        assertEquals(book, foundBook);
+    }
+}
+```

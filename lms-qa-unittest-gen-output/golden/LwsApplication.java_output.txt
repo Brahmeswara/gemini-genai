@@ -1,0 +1,15 @@
+```java
+package com.example.lws;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class LwsApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+```

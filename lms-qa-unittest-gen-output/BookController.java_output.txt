@@ -1,7 +1,7 @@
 ```java
 package com.example.lws.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,17 +12,17 @@ import com.example.lws.services.BookService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@ExtendWith(MockitoExtension.class)
-class BookControllerTest {
+@RunWith(MockitoJUnitRunner.class)
+public class BookControllerTest {
 
     @InjectMocks
     private BookController bookController;
@@ -31,52 +31,67 @@ class BookControllerTest {
     private BookService bookService;
 
     private Book book1;
-    private List<Book> bookList;
+    private Book book2;
+    private List<Book> books;
 
-    @BeforeEach
-    void setUp() {
-        book1 = Book.builder().id(1L).title("Book 1").author("Author 1").build();
-        bookList = new ArrayList<>();
-        bookList.add(book1);
+    @Before
+    public void setUp() {
+        book1 = Book.builder().id(1L).name("Book 1").author("Author 1").isbn("1234567890").build();
+        book2 = Book.builder().id(2L).name("Book 2").author("Author 2").isbn("0987654321").build();
+        books = new ArrayList<>();
+        books.add(book1);
+        books.add(book2);
     }
 
     @Test
-    void saveBookTest() {
+    public void testSaveBook() {
         when(bookService.saveBook(any(Book.class))).thenReturn(book1);
 
-        ResponseEntity<Book> responseEntity = bookController.saveBook(book1);
+        ResponseEntity<Book> response = bookController.saveBook(book1);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(book1, responseEntity.getBody());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(book1);
         verify(bookService, times(1)).saveBook(any(Book.class));
     }
 
     @Test
-    void updateBookTest() {
+    public void testUpdateBook() {
         when(bookService.updateBook(any(Book.class))).thenReturn(book1);
 
-        ResponseEntity<Book> responseEntity = bookController.updateBook(book1);
+        ResponseEntity<Book> response = bookController.updateBook(book1);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(book1, responseEntity.getBody());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(book1);
         verify(bookService, times(1)).updateBook(any(Book.class));
     }
 
     @Test
-    void deleteBookTest() {
-        bookController.deleteBook(book1.getId());
-        verify(bookService, times(1)).deleteBook(book1.getId());
+    public void testDeleteBook() {
+        bookController.deleteBook(1L);
+
+        verify(bookService, times(1)).deleteBook(1L);
     }
 
     @Test
-    void getBookByIdTest() {
-        when(bookService.getBookById(any(Long.class))).thenReturn(Optional.of(book1));
+    public void testGetBookById() {
+        when(bookService.getBookById(1L)).thenReturn(Optional.of(book1));
 
-        ResponseEntity<Book> responseEntity = bookController.getBookById(book1.getId());
+        ResponseEntity<Book> response = bookController.getBookById(1L);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(book1, responseEntity.getBody());
-        verify(bookService, times(1)).getBookById(any(Long.class));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(book1);
+        verify(bookService, times(1)).getBookById(1L);
+    }
+
+    @Test
+    public void testGetAllBooks() {
+        when(bookService.getAllBooks()).thenReturn(books);
+
+        ResponseEntity<List<Book>> response = bookController.getAllBooks();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(books);
+        verify(bookService, times(1)).getAllBooks();
     }
 }
 ```

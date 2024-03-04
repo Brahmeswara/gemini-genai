@@ -1,0 +1,95 @@
+```java
+package com.example.lws.services;
+
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import com.example.lws.models.Book;
+import com.example.lws.repository.BookRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class BookServiceImplUnitTest {
+
+    @Mock
+    private BookRepository bookRepository;
+
+    @InjectMocks
+    private BookServiceImpl bookService;
+
+    private Book book;
+
+    @BeforeEach
+    void setUp() {
+        book = Book.builder().id(1L).title("Mockito").author("Test").isbn("1234567890").build();
+    }
+
+    @DisplayName("Test Save Book")
+    @Test
+    void testSaveBook() {
+        // Given
+        given(bookRepository.save(book)).willReturn(book);
+
+        // When
+        Book savedBook = bookService.saveBook(book);
+
+        // Then
+        then(savedBook).isEqualTo(book);
+        verify(bookRepository).save(book);
+    }
+
+    @DisplayName("Test Update Book")
+    @Test
+    void testUpdateBook() {
+        // Given
+        given(bookRepository.save(book)).willReturn(book);
+
+        // When
+        Book updatedBook = bookService.updateBook(book);
+
+        // Then
+        then(updatedBook).isEqualTo(book);
+        verify(bookRepository).save(book);
+    }
+
+    @DisplayName("Test Delete Book")
+    @Test
+    void testDeleteBook() {
+        // Given
+        Long id = 1L;
+        willDoNothing().given(bookRepository).deleteById(id);
+
+        // When
+        bookService.deleteBook(id);
+
+        // Then
+        verify(bookRepository, times(1)).deleteById(id);
+    }
+
+    @DisplayName("Test Find Book By Id")
+    @Test
+    void testFindBookById() {
+        // Given
+        Long id = 1L;
+        given(bookRepository.findById(id)).willReturn(Optional.of(book));
+
+        // When
+        Book foundBook = bookService.getBookById(id);
+
+        // Then
+        BDDMockito.then(foundBook).isEqualTo(book);
+        verify(bookRepository, times(1)).findById(id);
+    }
+}
+```

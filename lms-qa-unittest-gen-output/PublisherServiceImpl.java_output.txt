@@ -1,86 +1,82 @@
 ```java
 package com.example.lws.services;
 
-import com.example.lws.models.UserInput;
-import com.example.lws.repositories.UserInputRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.example.lws.models.Publisher;
+import com.example.lws.repository.PublisherRepository;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class UserInputServiceTest {
-
-    @Mock
-    private UserInputRepository userInputRepository;
+@RunWith(MockitoJUnitRunner.class)
+public class PublisherServiceImplTest {
 
     @InjectMocks
-    private UserInputService userInputService;
+    private PublisherServiceImpl publisherService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    @Mock
+    private PublisherRepository publisherRepository;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testSaveUserInput() {
-        UserInput userInput = UserInput.builder().input("test").build();
+    public void shouldSavePublisher() {
+        Publisher publisher = Publisher.builder().name("Test Publisher").build();
 
-        when(userInputRepository.save(any())).thenReturn(userInput);
+        when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
 
-        UserInput savedUserInput = userInputService.saveUserInput(userInput);
+        Publisher savedPublisher = publisherService.savePublisher(publisher);
 
-        assertEquals(userInput.getInput(), savedUserInput.getInput());
-        verify(userInputRepository, times(1)).save(any());
+        verify(publisherRepository, times(1)).save(publisher);
+        assert savedPublisher != null;
+        assert savedPublisher.getId() != null;
     }
 
     @Test
-    public void testUpdateUserInput() {
-        UserInput userInput = UserInput.builder().id(1L).input("test").build();
+    public void shouldUpdatePublisher() {
+        Publisher publisher = Publisher.builder().id(1L).name("Test Publisher").build();
 
-        when(userInputRepository.save(any())).thenReturn(userInput);
+        when(publisherRepository.save(any(Publisher.class))).thenReturn(publisher);
 
-        UserInput savedUserInput = userInputService.updateUserInput(userInput);
+        Publisher updatedPublisher = publisherService.updatePublisher(publisher);
 
-        assertEquals(userInput.getId(), savedUserInput.getId());
-        assertEquals(userInput.getInput(), savedUserInput.getInput());
-        verify(userInputRepository, times(1)).save(any());
+        verify(publisherRepository, times(1)).save(publisher);
+        assert updatedPublisher != null;
+        assert updatedPublisher.getId() != null;
     }
 
     @Test
-    public void testDeleteUserInput() {
-        userInputService.deleteUserInput(1L);
+    public void shouldDeletePublisher() {
+        Long publisherId = 1L;
 
-        verify(userInputRepository, times(1)).deleteById(1L);
+        publisherService.deletePublisher(publisherId);
+
+        verify(publisherRepository, times(1)).deleteById(publisherId);
     }
 
     @Test
-    public void testGetUserInputById() {
-        UserInput userInput = UserInput.builder().id(1L).input("test").build();
+    public void shouldGetPublisherById() {
+        Long publisherId = 1L;
+        Publisher publisher = Publisher.builder().id(publisherId).name("Test Publisher").build();
 
-        when(userInputRepository.findById(1L)).thenReturn(Optional.of(userInput));
+        when(publisherRepository.findById(any(Long.class))).thenReturn(Optional.of(publisher));
 
-        UserInput foundUserInput = userInputService.getUserInputById(1L);
+        Publisher foundPublisher = publisherService.getPublisherById(publisherId);
 
-        assertEquals(userInput.getId(), foundUserInput.getId());
-        assertEquals(userInput.getInput(), foundUserInput.getInput());
-        verify(userInputRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    public void testGetUserInputById_whenUserInputNotFound() {
-        when(userInputRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> userInputService.getUserInputById(1L));
-        verify(userInputRepository, times(1)).findById(1L);
+        verify(publisherRepository, times(1)).findById(publisherId);
+        assert foundPublisher != null;
+        assert foundPublisher.getId().equals(publisherId);
     }
 }
 ```

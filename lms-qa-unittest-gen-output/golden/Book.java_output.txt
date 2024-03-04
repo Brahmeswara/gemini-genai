@@ -1,0 +1,74 @@
+```java
+package com.example.lws.models;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.ValueSource;
+
+
+@ExtendWith(MockitoExtension.class)
+public class BookUnitTest {
+
+    @Test
+    public void whenCreateBook_thenOk() {
+        //given
+        Book book = Book.builder().title("Test").author("Tester").build();
+
+        //then
+        Assertions.assertNotNull(book.getId());
+        Assertions.assertEquals("Test", book.getTitle());
+        Assertions.assertEquals("Tester", book.getAuthor());
+    }
+
+    @Nested
+    @DisplayName("whenTitleFieldEmpty")
+    class whenTitleFieldEmpty {
+
+        @Test
+        public void whenEmpty_thenIllegalArgumentException() {
+            //then
+            Assertions.assertThrows(IllegalArgumentException.class, () -> {
+                //given when
+                Book.builder().author("Tester").build();
+            });
+        }
+
+        @ValueSource(strings = {"", "   ", "\n", "\t"})
+        @ArgumentsSource(EmptySource.class)
+        @Test
+        public void whenBlank_thenIllegalArgumentException(final String title) {
+            //then
+            Assertions.assertThrows(IllegalArgumentException.class, () -> {
+                //given when
+                Book.builder().title(title).author("Tester").build();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("whenAuthorFieldEmpty")
+    class whenAuthorFieldEmpty {
+
+        @Test
+        public void whenEmpty_thenIllegalArgumentException() {
+            //then
+            Assertions.assertThrows(IllegalArgumentException.class, () -> {
+                //given when
+                Book.builder().title("Tester").build();
+            });
+        }
+
+        @ValueSource(strings = {"", "   ", "\n", "\t"})
+        @ArgumentsSource(EmptySource.class)
+        @Test
+        public void whenBlank_thenIllegalArgumentException(final String author) {
+            //then
+            Assertions.assertThrows(IllegalArgumentException.class, () -> {
+                //given when
+                Book.builder().title("Tester").author(author).build();
+            });
+        }
+    }
+}
+```

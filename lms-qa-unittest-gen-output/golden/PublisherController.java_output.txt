@@ -1,0 +1,74 @@
+```java
+package com.example.lws.controllers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import com.example.lws.models.Publisher;
+import com.example.lws.services.PublisherService;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+@ExtendWith(MockitoExtension.class)
+class PublisherControllerTest {
+
+    @Mock
+    private PublisherService publisherService;
+
+    @InjectMocks
+    private PublisherController publisherController;
+
+    private Publisher publisher;
+
+    @BeforeEach
+    void setUp() {
+        publisher = Publisher.builder()
+                .id(1L)
+                .name("Publisher 1")
+                .build();
+    }
+
+    @Test
+    void shouldSavePublisher() {
+        when(publisherService.savePublisher(publisher)).thenReturn(publisher);
+
+        ResponseEntity<Publisher> response = publisherController.savePublisher(publisher);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(publisher, response.getBody());
+    }
+
+    @Test
+    void shouldUpdatePublisher() {
+        publisher.setName("Updated Publisher 1");
+        when(publisherService.updatePublisher(publisher)).thenReturn(publisher);
+
+        ResponseEntity<Publisher> response = publisherController.updatePublisher(publisher);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(publisher, response.getBody());
+    }
+
+    @Test
+    void shouldDeletePublisher() {
+        publisherController.deletePublisher(publisher.getId());
+    }
+
+    @Test
+    void shouldGetPublisherById() {
+        when(publisherService.getPublisherById(publisher.getId())).thenReturn(Optional.of(publisher));
+
+        ResponseEntity<Publisher> response = publisherController.getPublisherById(publisher.getId());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(publisher, response.getBody());
+    }
+}
+```

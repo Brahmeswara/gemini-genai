@@ -1,0 +1,62 @@
+```java
+package com.example.lws.services;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import com.example.lws.models.Publisher;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PublisherServiceImplTest {
+
+  @InjectMocks
+  private PublisherServiceImpl publisherService;
+
+  @Mock
+  private PublisherRepository publisherRepository;
+
+  private Publisher publisher;
+
+  @Before
+  public void setup() {
+    publisher = Publisher.builder().id(1L).name("Test Publisher").build();
+  }
+
+  @Test
+  public void testSavePublisher() {
+    Mockito.when(publisherRepository.save(publisher)).thenReturn(publisher);
+    Publisher savedPublisher = publisherService.savePublisher(publisher);
+    assertNotNull(savedPublisher);
+    assertEquals(publisher.getId(), savedPublisher.getId());
+  }
+
+  @Test
+  public void testUpdatePublisher() {
+    Mockito.when(publisherRepository.save(publisher)).thenReturn(publisher);
+    Publisher updatedPublisher = publisherService.updatePublisher(publisher);
+    assertNotNull(updatedPublisher);
+    assertEquals(publisher.getId(), updatedPublisher.getId());
+  }
+
+  @Test
+  public void testDeletePublisher() {
+    publisherService.deletePublisher(publisher.getId());
+    Mockito.verify(publisherRepository, Mockito.times(1)).deleteById(publisher.getId());
+  }
+
+  @Test
+  public void testGetPublisherById() {
+    Mockito.when(publisherRepository.findById(publisher.getId())).thenReturn(publisher);
+    Publisher foundPublisher = publisherService.getPublisherById(publisher.getId());
+    assertNotNull(foundPublisher);
+    assertEquals(publisher.getId(), foundPublisher.getId());
+  }
+}
+```

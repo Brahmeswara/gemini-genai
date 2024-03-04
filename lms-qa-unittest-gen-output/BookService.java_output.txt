@@ -1,65 +1,87 @@
-```java
 package com.example.lws.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.example.lws.models.Book;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
-public class BookServiceTest {
+class BookServiceTest {
+
+    private BookService bookService;
 
     @Mock
     private BookRepository bookRepository;
 
-    @InjectMocks
-    private BookService bookService;
+    @BeforeEach
+    void setUp() {
+        bookService = new BookServiceImpl(bookRepository);
+    }
 
     @Test
-    void testSaveBook() {
-        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+    void saveBook() {
+        Book book = new Book();
+        book.setTitle("Spring Boot in Action");
+        book.setAuthor("Craig Walls");
+        book.setPrice(49.99);
 
-        Mockito.when(bookRepository.save(book)).thenReturn(book);
+        when(bookRepository.save(book)).thenReturn(book);
 
         Book savedBook = bookService.saveBook(book);
 
-        assertEquals(book, savedBook);
+        verify(bookRepository, times(1)).save(book);
+        assertEquals(book.getTitle(), savedBook.getTitle());
+        assertEquals(book.getAuthor(), savedBook.getAuthor());
+        assertEquals(book.getPrice(), savedBook.getPrice());
     }
 
     @Test
-    void testUpdateBook() {
-        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+    void updateBook() {
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("Spring Boot in Action");
+        book.setAuthor("Craig Walls");
+        book.setPrice(49.99);
 
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        Mockito.when(bookRepository.save(book)).thenReturn(book);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(bookRepository.save(book)).thenReturn(book);
 
         Book updatedBook = bookService.updateBook(book);
 
-        assertEquals(book, updatedBook);
+        verify(bookRepository, times(1)).findById(1L);
+        verify(bookRepository, times(1)).save(book);
+        assertEquals(book.getTitle(), updatedBook.getTitle());
+        assertEquals(book.getAuthor(), updatedBook.getAuthor());
+        assertEquals(book.getPrice(), updatedBook.getPrice());
     }
 
     @Test
-    void testDeleteBook() {
+    void deleteBook() {
         bookService.deleteBook(1L);
 
-        Mockito.verify(bookRepository).deleteById(1L);
+        verify(bookRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void testGetBookById() {
-        Book book = Book.builder().id(1L).title("Title").author("Author").build();
+    void getBookById() {
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("Spring Boot in Action");
+        book.setAuthor("Craig Walls");
+        book.setPrice(49.99);
 
-        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         Book foundBook = bookService.getBookById(1L);
 
-        assertEquals(book, foundBook);
+        verify(bookRepository, times(1)).findById(1L);
+        assertEquals(book.getTitle(), foundBook.getTitle());
+        assertEquals(book.getAuthor(), foundBook.getAuthor());
+        assertEquals(book.getPrice(), foundBook.getPrice());
     }
 }
-```
+"""

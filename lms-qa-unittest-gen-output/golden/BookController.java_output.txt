@@ -1,0 +1,82 @@
+```java
+package com.example.lws.controllers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.example.lws.models.Book;
+import com.example.lws.services.BookService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+@ExtendWith(MockitoExtension.class)
+class BookControllerTest {
+
+    @InjectMocks
+    private BookController bookController;
+
+    @Mock
+    private BookService bookService;
+
+    private Book book1;
+    private List<Book> bookList;
+
+    @BeforeEach
+    void setUp() {
+        book1 = Book.builder().id(1L).title("Book 1").author("Author 1").build();
+        bookList = new ArrayList<>();
+        bookList.add(book1);
+    }
+
+    @Test
+    void saveBookTest() {
+        when(bookService.saveBook(any(Book.class))).thenReturn(book1);
+
+        ResponseEntity<Book> responseEntity = bookController.saveBook(book1);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(book1, responseEntity.getBody());
+        verify(bookService, times(1)).saveBook(any(Book.class));
+    }
+
+    @Test
+    void updateBookTest() {
+        when(bookService.updateBook(any(Book.class))).thenReturn(book1);
+
+        ResponseEntity<Book> responseEntity = bookController.updateBook(book1);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(book1, responseEntity.getBody());
+        verify(bookService, times(1)).updateBook(any(Book.class));
+    }
+
+    @Test
+    void deleteBookTest() {
+        bookController.deleteBook(book1.getId());
+        verify(bookService, times(1)).deleteBook(book1.getId());
+    }
+
+    @Test
+    void getBookByIdTest() {
+        when(bookService.getBookById(any(Long.class))).thenReturn(Optional.of(book1));
+
+        ResponseEntity<Book> responseEntity = bookController.getBookById(book1.getId());
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(book1, responseEntity.getBody());
+        verify(bookService, times(1)).getBookById(any(Long.class));
+    }
+}
+```

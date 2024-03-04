@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 public class PublisherRepositoryTest {
@@ -16,36 +17,34 @@ public class PublisherRepositoryTest {
     private PublisherRepository publisherRepository;
 
     @Test
-    public void should_save_publisher() {
-        // given
-        Publisher publisher = Publisher.builder()
-                .name("publisherName")
-                .build();
+    public void should_find_no_publisher_if_repository_is_empty() {
+        Iterable<Publisher> publishers = publisherRepository.findAll();
+        assertThat(publishers).isEmpty();
+    }
 
-        // when
-        Publisher savedPublisher = publisherRepository.save(publisher);
-
-        // then
-        assertThat(savedPublisher).isNotNull();
-        assertThat(savedPublisher.getId()).isNotNull();
-        assertThat(savedPublisher.getName()).isEqualTo("publisherName");
+    @Test
+    public void should_store_a_publisher() {
+        Publisher publisher = Publisher.builder().name("Harper Collins").build();
+        publisherRepository.save(publisher);
+        assertThat(publisherRepository.findAll()).hasSize(1).contains(publisher);
     }
 
     @Test
     public void should_find_publisher_by_id() {
-        // given
-        Publisher publisher = Publisher.builder()
-                .name("publisherName")
-                .build();
-        Long publisherId = publisherRepository.save(publisher).getId();
+        Publisher publisher = Publisher.builder().name("Harper Collins").build();
+        publisherRepository.save(publisher);
 
-        // when
-        Publisher foundPublisher = publisherRepository.findById(publisherId).orElseThrow();
+        Optional<Publisher> foundPublisher = publisherRepository.findById(publisher.getId());
 
-        // then
-        assertThat(foundPublisher).isNotNull();
-        assertThat(foundPublisher.getId()).isEqualTo(publisherId);
-        assertThat(foundPublisher.getName()).isEqualTo("publisherName");
+        assertThat(foundPublisher).isPresent().contains(publisher);
+    }
+
+    @Test
+    public void should_delete_a_publisher() {
+        Publisher publisher = Publisher.builder().name("Harper Collins").build();
+        publisherRepository.save(publisher);
+        publisherRepository.deleteById(publisher.getId());
+        assertThat(publisherRepository.findAll()).isEmpty();
     }
 }
 ```

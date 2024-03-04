@@ -1,0 +1,51 @@
+```java
+package com.example.lws.repository;
+
+import com.example.lws.models.Publisher;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@DataJpaTest
+public class PublisherRepositoryTest {
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Test
+    public void should_save_publisher() {
+        // given
+        Publisher publisher = Publisher.builder()
+                .name("publisherName")
+                .build();
+
+        // when
+        Publisher savedPublisher = publisherRepository.save(publisher);
+
+        // then
+        assertThat(savedPublisher).isNotNull();
+        assertThat(savedPublisher.getId()).isNotNull();
+        assertThat(savedPublisher.getName()).isEqualTo("publisherName");
+    }
+
+    @Test
+    public void should_find_publisher_by_id() {
+        // given
+        Publisher publisher = Publisher.builder()
+                .name("publisherName")
+                .build();
+        Long publisherId = publisherRepository.save(publisher).getId();
+
+        // when
+        Publisher foundPublisher = publisherRepository.findById(publisherId).orElseThrow();
+
+        // then
+        assertThat(foundPublisher).isNotNull();
+        assertThat(foundPublisher.getId()).isEqualTo(publisherId);
+        assertThat(foundPublisher.getName()).isEqualTo("publisherName");
+    }
+}
+```

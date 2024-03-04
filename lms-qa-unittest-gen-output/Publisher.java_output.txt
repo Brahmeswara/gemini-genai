@@ -1,39 +1,55 @@
 ```java
 package com.example.lws.models;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class PublisherUnitTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    @Test
-    void testBuilder() {
-        Publisher publisher = Publisher.builder()
-                .name("Test Publisher")
+class PublisherTest {
+
+    private Publisher publisher;
+
+    @BeforeEach
+    void setUp() {
+        publisher = Publisher.builder()
+                .id(1L)
+                .name("John Doe")
                 .address("123 Main Street")
-                .phone("555-1212")
-                .email("test@publisher.com")
+                .phone("555-555-5555")
+                .email("john.doe@example.com")
                 .build();
-
-        assertEquals("Test Publisher", publisher.getName());
-        assertEquals("123 Main Street", publisher.getAddress());
-        assertEquals("555-1212", publisher.getPhone());
-        assertEquals("test@publisher.com", publisher.getEmail());
     }
 
     @Test
-    void testGetterAndSetter() {
-        Publisher publisher = new Publisher();
-        publisher.setName("Test Publisher");
-        publisher.setAddress("123 Main Street");
-        publisher.setPhone("555-1212");
-        publisher.setEmail("test@publisher.com");
+    void getId() {
+        assertEquals(1L, publisher.getId());
+    }
 
-        assertEquals("Test Publisher", publisher.getName());
+    @Test
+    void getName() {
+        assertEquals("John Doe", publisher.getName());
+    }
+
+    @Test
+    void getAddress() {
         assertEquals("123 Main Street", publisher.getAddress());
-        assertEquals("555-1212", publisher.getPhone());
-        assertEquals("test@publisher.com", publisher.getEmail());
+    }
+
+    @Test
+    void getPhone() {
+        assertEquals("555-555-5555", publisher.getPhone());
+    }
+
+    @Test
+    void getEmail() {
+        assertEquals("john.doe@example.com", publisher.getEmail());
+    }
+
+    @Test
+    void testToString() {
+        String expected = "Publisher(id=1, name=John Doe, address=123 Main Street, phone=555-555-5555, email=john.doe@example.com)";
+        assertEquals(expected, publisher.toString());
     }
 }
 ```

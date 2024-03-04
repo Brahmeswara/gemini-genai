@@ -1,74 +1,51 @@
 ```java
 package com.example.lws.models;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.ValueSource;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class BookUnitTest {
+class BookTest {
 
     @Test
-    public void whenCreateBook_thenOk() {
-        //given
-        Book book = Book.builder().title("Test").author("Tester").build();
-
-        //then
-        Assertions.assertNotNull(book.getId());
-        Assertions.assertEquals("Test", book.getTitle());
-        Assertions.assertEquals("Tester", book.getAuthor());
+    void should_return_default_values() {
+        Book book = Book.builder().build();
+        assertEquals(null, book.getId());
+        assertEquals(null, book.getTitle());
+        assertEquals(null, book.getAuthor());
+        assertEquals(null, book.getPublisher());
+        assertEquals(null, book.getYearOfPublication());
+        assertEquals(null, book.getIsbn());
+        assertEquals(null, book.getPrice());
+        assertEquals(null, book.getQuantityInStock());
+        assertEquals(null, book.getQuantityAvailable());
     }
 
-    @Nested
-    @DisplayName("whenTitleFieldEmpty")
-    class whenTitleFieldEmpty {
-
-        @Test
-        public void whenEmpty_thenIllegalArgumentException() {
-            //then
-            Assertions.assertThrows(IllegalArgumentException.class, () -> {
-                //given when
-                Book.builder().author("Tester").build();
-            });
-        }
-
-        @ValueSource(strings = {"", "   ", "\n", "\t"})
-        @ArgumentsSource(EmptySource.class)
-        @Test
-        public void whenBlank_thenIllegalArgumentException(final String title) {
-            //then
-            Assertions.assertThrows(IllegalArgumentException.class, () -> {
-                //given when
-                Book.builder().title(title).author("Tester").build();
-            });
-        }
-    }
-
-    @Nested
-    @DisplayName("whenAuthorFieldEmpty")
-    class whenAuthorFieldEmpty {
-
-        @Test
-        public void whenEmpty_thenIllegalArgumentException() {
-            //then
-            Assertions.assertThrows(IllegalArgumentException.class, () -> {
-                //given when
-                Book.builder().title("Tester").build();
-            });
-        }
-
-        @ValueSource(strings = {"", "   ", "\n", "\t"})
-        @ArgumentsSource(EmptySource.class)
-        @Test
-        public void whenBlank_thenIllegalArgumentException(final String author) {
-            //then
-            Assertions.assertThrows(IllegalArgumentException.class, () -> {
-                //given when
-                Book.builder().title("Tester").author(author).build();
-            });
-        }
+    @Test
+    void should_return_set_values() {
+        Book book = Book.builder()
+                .id(1L)
+                .title("Title")
+                .author("Author")
+                .publisher(new Publisher())
+                .yearOfPublication(2023)
+                .isbn("ISBN")
+                .price(BigDecimal.TEN)
+                .quantityInStock(10)
+                .quantityAvailable(10)
+                .build();
+        assertEquals(1L, book.getId());
+        assertEquals("Title", book.getTitle());
+        assertEquals("Author", book.getAuthor());
+        assertEquals(new Publisher(), book.getPublisher());
+        assertEquals(2023, book.getYearOfPublication());
+        assertEquals("ISBN", book.getIsbn());
+        assertEquals(BigDecimal.TEN, book.getPrice());
+        assertEquals(10, book.getQuantityInStock());
+        assertEquals(10, book.getQuantityAvailable());
     }
 }
 ```
